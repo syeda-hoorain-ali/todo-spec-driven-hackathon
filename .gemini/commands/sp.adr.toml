@@ -1,3 +1,6 @@
+description = "Review planning artifacts for architecturally significant decisions and create ADRs."
+
+prompt = """
 ---
 description: Review planning artifacts for architecturally significant decisions and create ADRs.
 ---
@@ -46,7 +49,7 @@ Execute this workflow in 6 sequential steps. At Steps 2 and 4, apply lightweight
 
 ## Step 1: Load Planning Context
 
-Run `.specify/scripts/powershell/check-prerequisites.ps1 -Json` from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS.
+Run `.specify/scripts/bash/check-prerequisites.sh --json` from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS.
 
 Derive absolute paths:
 
@@ -205,3 +208,4 @@ As the main request completes, you MUST create and complete a PHR (Prompt Histor
 4) Validate + report
    - No unresolved placeholders; path under `history/prompts/` and matches stage; stage/title/date coherent; print ID + path + stage + title.
    - On failure: warn, don't block. Skip only for `/sp.phr`.
+"""
