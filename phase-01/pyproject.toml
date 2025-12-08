@@ -1,0 +1,37 @@
+[project]
+name = "todo-app"
+version = "0.1.0"
+description = "A Python console todo application with in-memory storage"
+readme = "README.md"
+authors = [
+    { name = "Syeda Hoorain Ali", email = "syedahoorainali8@gmail.com" }
+]
+license = {text = "MIT"}
+requires-python = ">=3.12"
+dependencies = [
+    "rich>=13.0",
+    "pytest>=7.0",
+    "questionary>=2.1.1",
+]
+
+[project.scripts]
+todo = "todo_app.main:main"
+
+[build-system]
+requires = ["uv_build>=0.9.16,<0.10.0"]
+build-backend = "uv_build"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "mypy"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["todo_app*"]
+
+[tool.uv.workspace]
+members = [
+    "phase-01",
+]

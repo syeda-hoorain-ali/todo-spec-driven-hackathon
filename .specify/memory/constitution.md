@@ -1,55 +1,76 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!-- SYNC IMPACT REPORT
+Version change: N/A (initial version) → 1.0.0
+Added sections: All principles and sections as specified
+Removed sections: None
+Templates requiring updates:
+- .specify/templates/plan-template.md ⚠ pending
+- .specify/templates/spec-template.md ⚠ pending
+- .specify/templates/tasks-template.md ⚠ pending
+- .specify/templates/commands/*.md ⚠ pending
+Follow-up TODOs: None
+-->
+# Todo Spec-Driven Development Hackathon Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### Phase-Based Organization
+All project artifacts must be organized by hackathon phases (Phase I-V) with dedicated folders in both code and specification directories: `specs/phase-01/`, `src/phase-01/`, etc. This ensures clear separation of concerns and progress tracking across the five hackathon phases.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### Spec-Driven Development
+All development follows the Spec-Kit Plus methodology with proper specification, planning, and task documentation before implementation. No code implementation should proceed without approved specifications.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### Test-Driven Development (NON-NEGOTIABLE)
+All Python code must follow TDD principles - write tests first, then implement functionality. The Red-Green-Refactor cycle must be strictly enforced. All code must have corresponding tests with adequate coverage before acceptance.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### Python Package Management with uv
+Use `uv` as the exclusive package manager for all Python dependencies. All Python projects must use `pyproject.toml` for dependency specifications and follow modern Python packaging standards.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### Technology Stack Adherence
+Adhere to the specified technology stack: Next.js 16+, TypeScript, Tailwind CSS for frontend; Python FastAPI with uv for backend; SQLModel with Neon Serverless PostgreSQL for database; Better Auth with JWT for authentication; OpenAI Agents SDK and MCP SDK for AI integration.
 
-### [PRINCIPLE_6_NAME]
+### Quality Assurance Standards
+Maintain high code quality through testing, documentation, and peer reviews. All features must include proper documentation and pass automated quality checks before acceptance.
 
+## Additional Constraints
 
-[PRINCIPLE__DESCRIPTION]
+### Python Development Standards
+- Follow PEP 8 guidelines for Python code
+- Use type hints for all public interfaces
+- Maintain high test coverage (minimum 80%)
+- Use modern Python features appropriately
+- Follow security best practices
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### Deployment Standards
+- Containerize all applications using Docker
+- Use Kubernetes for orchestration (Minikube for local, DigitalOcean DOKS for production)
+- Implement proper CI/CD pipelines
+- Maintain environment parity across development, staging, and production
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Development Workflow
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### Implementation Process
+1. Create proper specifications before implementation
+2. Follow the 5-phase hackathon progression
+3. Develop reusable intelligence through skills and subagents
+4. Perform regular integration and testing
+5. Maintain continuous integration practices
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### Review Process
+- All code changes require peer review
+- Specifications must be approved before implementation
+- Test coverage must meet minimum requirements
+- Documentation must be updated with each feature
+
+### Quality Gates
+- All tests must pass before merging
+- Code coverage must meet minimum thresholds
+- Security scans must pass
+- Performance benchmarks must be met
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other development practices and guidelines. Amendments to this constitution require explicit documentation, approval from project leadership, and a migration plan for existing code. All pull requests and code reviews must verify compliance with these principles. Complexity must be justified with clear benefits, and teams should reference this constitution for runtime development guidance.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+All team members are expected to follow these principles consistently across all hackathon phases. Deviations must be documented and approved through the proper channels.
+
+**Version**: 1.0.0 | **Ratified**: 2025-12-07 | **Last Amended**: 2025-12-07
