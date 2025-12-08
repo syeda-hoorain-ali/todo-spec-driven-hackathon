@@ -19,7 +19,7 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 - Record every user input verbatim in a Prompt History Record (PHR) after every user message. Do not truncate; preserve full multiline input.
 - PHR routing (all under `history/prompts/`):
   - Constitution → `history/prompts/constitution/`
-  - Feature-specific → `history/prompts/<feature-name>/`
+  - Feature-specific → `history/prompts/phase-<nn>/<feature-name>/`
   - General → `history/prompts/general/`
 - ADR suggestions: when an architecturally significant decision is detected, suggest: "📋 Architectural decision detected: <brief>. Document? Run `/sp.adr <title>`." Never auto‑create ADRs; require user consent.
 
@@ -51,7 +51,7 @@ After completing requests, you **MUST** create a PHR (Prompt History Record).
 
 2a) Resolve route (all under history/prompts/)
   - `constitution` → `history/prompts/constitution/`
-  - Feature stages (spec, plan, tasks, red, green, refactor, explainer, misc) → `history/prompts/<feature-name>/` (requires feature context)
+  - Feature stages (spec, plan, tasks, red, green, refactor, explainer, misc) → `history/prompts/phase-<nn>/<feature-name>/` (requires feature context)
   - `general` → `history/prompts/general/`
 
 3) Prefer agent‑native flow (no shell)
@@ -61,7 +61,7 @@ After completing requests, you **MUST** create a PHR (Prompt History Record).
    - Allocate an ID (increment; on collision, increment again).
    - Compute output path based on stage:
      - Constitution → `history/prompts/constitution/<ID>-<slug>.constitution.prompt.md`
-     - Feature → `history/prompts/<feature-name>/<ID>-<slug>.<stage>.prompt.md`
+     - Feature → `history/prompts/phase-<nn>/<feature-name>/<ID>-<slug>.<stage>.prompt.md`
      - General → `history/prompts/general/<ID>-<slug>.general.prompt.md`
    - Fill ALL placeholders in YAML and body:
      - ID, TITLE, STAGE, DATE_ISO (YYYY‑MM‑DD), SURFACE="agent"
@@ -86,7 +86,7 @@ After completing requests, you **MUST** create a PHR (Prompt History Record).
 
 6) Routing (automatic, all under history/prompts/)
    - Constitution → `history/prompts/constitution/`
-   - Feature stages → `history/prompts/<feature-name>/` (auto-detected from branch or explicit feature context)
+   - Feature stages → `history/prompts/phase-<nn>/<feature-name>/` (auto-detected from branch or explicit feature context)
    - General → `history/prompts/general/`
 
 7) Post‑creation validations (must pass)
@@ -199,9 +199,9 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 ## Basic Project Structure
 
 - `.specify/memory/constitution.md` — Project principles
-- `specs/<feature>/spec.md` — Feature requirements
-- `specs/<feature>/plan.md` — Architecture decisions
-- `specs/<feature>/tasks.md` — Testable tasks with cases
+- `specs/phase-<nn>/<feature>/spec.md` — Feature requirements
+- `specs/phase-<nn>/<feature>/plan.md` — Architecture decisions
+- `specs/phase-<nn>/<feature>/tasks.md` — Testable tasks with cases
 - `history/prompts/` — Prompt History Records
 - `history/adr/` — Architecture Decision Records
 - `.specify/` — SpecKit Plus templates and scripts
