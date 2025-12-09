@@ -5,13 +5,14 @@ set -e
 JSON_MODE=false
 SHORT_NAME=""
 BRANCH_NUMBER=""
+PHASE=""
 ARGS=()
 i=1
 while [ $i -le $# ]; do
     arg="${!i}"
     case "$arg" in
-        --json) 
-            JSON_MODE=true 
+        --json)
+            JSON_MODE=true
             ;;
         --short-name)
             if [ $((i + 1)) -gt $# ]; then
@@ -40,18 +41,32 @@ while [ $i -le $# ]; do
             fi
             BRANCH_NUMBER="$next_arg"
             ;;
-        --help|-h) 
-            echo "Usage: $0 [--json] [--short-name <name>] [--number N] <feature_description>"
+        --phase)
+            if [ $((i + 1)) -gt $# ]; then
+                echo 'Error: --phase requires a value' >&2
+                exit 1
+            fi
+            i=$((i + 1))
+            next_arg="${!i}"
+            if [[ "$next_arg" == --* ]]; then
+                echo 'Error: --phase requires a value' >&2
+                exit 1
+            fi
+            PHASE="$next_arg"
+            ;;
+        --help|-h)
+            echo "Usage: $0 [--json] [--short-name <name>] [--number N] [--phase N] <feature_description>"
             echo ""
             echo "Options:"
             echo "  --json              Output in JSON format"
             echo "  --short-name <name> Provide a custom short name (2-4 words) for the branch"
             echo "  --number N          Specify branch number manually (overrides auto-detection)"
+            echo "  --phase N           Specify phase number (e.g., 2 for phase-02)"
             echo "  --help, -h          Show this help message"
             echo ""
             echo "Examples:"
             echo "  $0 'Add user authentication system' --short-name 'user-auth'"
-            echo "  $0 'Implement OAuth2 integration for API' --number 5"
+            echo "  $0 'Implement OAuth2 integration for API' --number 5 --phase 2"
             exit 0
             ;;
         *) 
@@ -63,7 +78,7 @@ done
 
 FEATURE_DESCRIPTION="${ARGS[*]}"
 if [ -z "$FEATURE_DESCRIPTION" ]; then
-    echo "Usage: $0 [--json] [--short-name <name>] [--number N] <feature_description>" >&2
+    echo "Usage: $0 [--json] [--short-name <name>] [--number N] [--phase N] <feature_description>" >&2
     exit 1
 fi
 
@@ -130,7 +145,15 @@ fi
 
 cd "$REPO_ROOT"
 
-SPECS_DIR="$REPO_ROOT/specs"
+# Determine the phase directory
+if [ -n "$PHASE" ] && [ "$PHASE" -gt 0 ]; then
+    phase_dir="phase-$(printf "%02d" "$PHASE")"
+    SPECS_DIR="$REPO_ROOT/specs/$phase_dir"
+else
+    # If no phase specified, use flat structure
+    SPECS_DIR="$REPO_ROOT/specs"
+fi
+
 mkdir -p "$SPECS_DIR"
 
 # Function to generate branch name with stop word filtering and length filtering
@@ -247,9 +270,15 @@ TEMPLATE="$REPO_ROOT/.specify/templates/spec-template.md"
 SPEC_FILE="$FEATURE_DIR/spec.md"
 if [ -f "$TEMPLATE" ]; then cp "$TEMPLATE" "$SPEC_FILE"; else touch "$SPEC_FILE"; fi
 
-# Auto-create history/prompts/<branch-name>/ directory (same as specs/<branch-name>/)
-# This keeps naming consistent across branch, specs, and prompts directories
-PROMPTS_DIR="$REPO_ROOT/history/prompts/$BRANCH_NAME"
+# Auto-create history/prompts/<phase-or-branch-name>/<branch-name>/ directory (phase-based structure when phase specified)
+# This follows the same structure as specs/<phase-or-branch-name>/<branch-name>/
+if [ -n "$PHASE" ] && [ "$PHASE" -gt 0 ]; then
+    phase_dir="phase-$(printf "%02d" "$PHASE")"
+    PROMPTS_DIR="$REPO_ROOT/history/prompts/$phase_dir/$BRANCH_NAME"
+else
+    # Default to flat structure when no phase is involved
+    PROMPTS_DIR="$REPO_ROOT/history/prompts/$BRANCH_NAME"
+fi
 mkdir -p "$PROMPTS_DIR"
 
 # Set the SPECIFY_FEATURE environment variable for the current session

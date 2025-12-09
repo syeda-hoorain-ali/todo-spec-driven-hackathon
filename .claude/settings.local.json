@@ -10,7 +10,8 @@
       "Bash(.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks)",
       "Bash(uv run pytest tests/ -v)",
       "Bash(uv run pytest)",
-      "Bash(xargs -I {} sh -c 'find . -path \"\"./phase-01/*\"\" -type f -newer {} 2>/dev/null || echo \"\"Checking phase-01 files\"\"')"
+      "Bash(xargs -I {} sh -c 'find . -path \"\"./phase-01/*\"\" -type f -newer {} 2>/dev/null || echo \"\"Checking phase-01 files\"\"')",
+      "Bash(git fetch --all --prune)"
     ],
     "deny": [],
     "ask": []

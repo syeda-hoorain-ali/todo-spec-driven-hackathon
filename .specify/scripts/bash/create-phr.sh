@@ -7,17 +7,17 @@ set -euo pipefail
 # 1. Constitution stage:
 #    → history/prompts/constitution/
 #    → stage: constitution
-#    → naming: 0001-title.constitution.prompt.md
+#    → naming: 001-title.constitution.prompt.md
 #
 # 2. Feature stages (spec-specific work):
 #    → history/prompts/<spec-name>/
 #    → stages: spec, plan, tasks, red, green, refactor, explainer, misc
-#    → naming: 0001-title.spec.prompt.md
+#    → naming: 001-title.spec.prompt.md
 #
 # 3. General stage (catch-all):
 #    → history/prompts/general/
 #    → stage: general
-#    → naming: 0001-title.general.prompt.md
+#    → naming: 001-title.general.prompt.md
 #
 # This script ONLY:
 #   1. Creates the correct directory structure
@@ -221,11 +221,11 @@ slugify() {
 # Get next ID (local to this directory)
 get_next_id() {
   local max_id=0
-  for file in "$PROMPTS_DIR"/[0-9][0-9][0-9][0-9]-*.prompt.md; do
+  for file in "$PROMPTS_DIR"/[0-9][0-9][0-9]-*.prompt.md; do
     [[ -e "$file" ]] || continue
     local base=$(basename "$file")
     local num=${base%%-*}
-    if [[ "$num" =~ ^[0-9]{4}$ ]]; then
+    if [[ "$num" =~ ^[0-9]{3}$ ]]; then
       local value=$((10#$num))
       if (( value > max_id )); then
         max_id=$value
