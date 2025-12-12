@@ -5,6 +5,7 @@ param(
     [switch]$Json,
     [string]$ShortName,
     [int]$Number = 0,
+    [int]$Phase = 0,
     [switch]$Help,
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$FeatureDescription
@@ -13,11 +14,12 @@ $ErrorActionPreference = 'Stop'
 
 # Show help if requested
 if ($Help) {
-    Write-Host "Usage: ./create-new-feature.ps1 [-Json] [-ShortName <name>] [-Number N] <feature description>"
+    Write-Host "Usage: ./create-new-feature.ps1 [-Json] [-ShortName <name>] [-Number N] [-Phase N] <feature description>"
     Write-Host ""
     Write-Host "Options:"
     Write-Host "  -Json               Output in JSON format"
     Write-Host "  -ShortName <name>   Provide a custom short name (2-4 words) for the branch"
+    Write-Host "  -Phase N            Specify phase number"
     Write-Host "  -Number N           Specify branch number manually (overrides auto-detection)"
     Write-Host "  -Help               Show this help message"
     Write-Host ""
@@ -147,7 +149,15 @@ try {
 
 Set-Location $repoRoot
 
-$specsDir = Join-Path $repoRoot 'specs'
+# Determine the phase directory
+if ($Phase -gt 0) {
+    $phaseDir = "phase-$('{0:00}' -f $Phase)"
+    $specsDir = Join-Path $repoRoot 'specs' $phaseDir
+} else {
+    # If no phase specified, use flat structure
+    $specsDir = Join-Path $repoRoot 'specs'
+}
+
 New-Item -ItemType Directory -Path $specsDir -Force | Out-Null
 
 # Function to generate branch name with stop word filtering and length filtering
@@ -269,9 +279,15 @@ if (Test-Path $template) {
     New-Item -ItemType File -Path $specFile | Out-Null
 }
 
-# Auto-create history/prompts/<branch-name>/ directory (same as specs/<branch-name>/)
-# This keeps naming consistent across branch, specs, and prompts directories
-$promptsDir = Join-Path $repoRoot 'history' 'prompts' $branchName
+# Auto-create history/prompts/<phase-or-branch-name>/<branch-name>/ directory (phase-based structure when phase specified)
+# This follows the same structure as specs/<phase-or-branch-name>/<branch-name>/
+if ($Phase -gt 0) {
+    $phaseDir = "phase-$('{0:00}' -f $Phase)"
+    $promptsDir = Join-Path $repoRoot 'history' 'prompts' $phaseDir $branchName
+} else {
+    # Default to flat structure when no phase is involved
+    $promptsDir = Join-Path $repoRoot 'history' 'prompts' $branchName
+}
 New-Item -ItemType Directory -Path $promptsDir -Force | Out-Null
 
 # Set the SPECIFY_FEATURE environment variable for the current session

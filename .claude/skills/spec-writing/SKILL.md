@@ -46,10 +46,16 @@ Each feature specification includes:
 Prompt History Records are stored in:
 ```
 history/prompts/
-├── 001-todo-app/
-│   └── <ID>-<slug>.spec.prompt.md
-├── 002-<feature-name>/
-│   └── <ID>-<slug>.spec.prompt.md
+├── phase-01/
+│   ├── 001-todo-app/
+│   │   └── <ID>-<slug>.<stage>.prompt.md
+│   └── 002-<feature-name>/
+│       └── <ID>-<slug>.<stage>.prompt.md
+├── phase-02/
+│   ├── 001-<feature-name>/
+│   │   └── <ID>-<slug>.<stage>.prompt.md
+│   └── 002-<feature-name>/
+│       └── <ID>-<slug>.<stage>.prompt.md
 └── general/
     └── <ID>-<slug>.general.prompt.md
 ```
