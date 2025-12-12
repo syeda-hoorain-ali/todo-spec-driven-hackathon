@@ -65,9 +65,9 @@ frontend/
 │   ├── app/
 │   │   ├── layout.tsx
 │   │   ├── page.tsx
-│   │   ├── signin/
+│   │   ├── sign-in/
 │   │   │   └── page.tsx
-│   │   ├── signup/
+│   │   ├── sign-up/
 │   │   │   └── page.tsx
 │   │   ├── forgot-password/
 │   │   │   └── page.tsx

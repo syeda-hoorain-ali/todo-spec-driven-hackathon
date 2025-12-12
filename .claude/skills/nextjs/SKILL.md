@@ -37,7 +37,7 @@ npx shadcn@latest init .
 Add specific components as needed:
 
 ```bash
-npx shadcn@latest add button card input label textarea select checkbox radio-group
+npx shadcn@latest add button card formand wha input label textarea select checkbox radio-group
 ```
 
 ## Component Naming and Organization
@@ -52,11 +52,11 @@ npx shadcn@latest add button card input label textarea select checkbox radio-gro
 - Group related components together
 
 ### Export Convention
-- All components MUST use named exports (not default exports)
+- All components MUST use named exports using arrow functions (not default exports)
 - Example:
 ```tsx
 // ✅ Correct
-export function UserProfile() {
+export const UserProfile = () => {
   return <div>Profile Component</div>;
 }
 
@@ -171,15 +171,15 @@ export const useFeature = () => {
   });
 
   const updateFeature = useMutation({
-    mutationFn: (data: any) => {
-      // API call implementation
-    }
+    mutationFn: (data: any) => {},
+    onSuccess: () => {},
+    onError: (error) => {},
   });
 
   const deleteFeature = useMutation({
-    mutationFn: (id: string) => {
-      // API call implementation
-    }
+    mutationFn: (data: any) => {},
+    onSuccess: () => {},
+    onError: (error) => {},
   });
 
   const getFeatures = useQuery({
@@ -230,11 +230,11 @@ import { Feature } from "./types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
-export const fetFeatures = async (): Feature[] => {
+export const fetchFeatures = async (): Promise<Feature[]> => {
   const response = await fetch(`${API_BASE_URL}/features`);
   if (!response.ok) throw new Error("Failed to fetch features");
   return response.json();
-},
+};
 
 export const createFeature = async (data: Partial<Feature>) => {
   const response = await fetch(`${API_BASE_URL}/features`, {
@@ -244,7 +244,7 @@ export const createFeature = async (data: Partial<Feature>) => {
   });
   if (!response.ok) throw new Error("Failed to create feature");
   return response.json();
-},
+};
 ```
 
 ## Development Workflow
@@ -278,7 +278,7 @@ npx create-next-app@latest project-name --yes --typescript --tailwind --app --sr
 npx shadcn@latest init .
 
 # Add specific components
-npx shadcn@latest add button card input label textarea
+npx shadcn@latest add button card form input label textarea
 ```
 
 ### Development
