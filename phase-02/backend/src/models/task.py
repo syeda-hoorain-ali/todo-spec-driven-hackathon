@@ -1,6 +1,6 @@
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from .base import Base
 
 
@@ -22,7 +22,8 @@ class TaskBase(SQLModel):
     max_occurrences: Optional[int] = Field(default=None)  # Max number of occurrences
     # Timestamps - required for all tasks
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), 
+                                 sa_column_kwargs={"onupdate": datetime.now(timezone.utc)})
 
 
 

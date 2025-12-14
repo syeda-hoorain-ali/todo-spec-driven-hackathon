@@ -314,14 +314,15 @@ class TaskService:
     @staticmethod
     def search_tasks(user_id: str, keyword: Optional[str], completed: Optional[bool],
                      date_from: Optional[datetime],
-                     date_to: Optional[datetime], session: Session) -> List[Task]:
-        """Search and filter tasks for the specified user."""
+                     date_to: Optional[datetime], session: Session,
+                     skip: int = 0, limit: int = 100) -> List[Task]:
+        """Search and filter tasks for the specified user with pagination."""
         statement = select(Task).where(Task.user_id == user_id)
 
         if keyword:
             statement = statement.where(
-                (Task.title.contains(keyword)) |
-                (Task.description.contains(keyword))
+                (Task.title.ilike(f'%{keyword}%')) |
+                (Task.description.ilike(f'%{keyword}%'))
             )
 
         if completed is not None:
@@ -332,6 +333,9 @@ class TaskService:
 
         if date_to:
             statement = statement.where(Task.created_at <= date_to)
+
+        # Apply pagination at the database level for performance
+        statement = statement.offset(skip).limit(limit)
 
         tasks = session.exec(statement).all()
         return tasks

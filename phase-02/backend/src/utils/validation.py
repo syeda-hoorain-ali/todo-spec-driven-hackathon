@@ -1,25 +1,23 @@
 import re
+import bleach
 from typing import Optional
 from ..utils.exceptions import ValidationError
 
 def sanitize_input(text: Optional[str]) -> Optional[str]:
     """
-    Sanitize input text by removing potentially dangerous characters/sequences.
+    Sanitize input text using a whitelist approach with bleach to prevent XSS.
+    Only allows safe HTML tags and attributes.
     """
     if text is None:
         return None
 
-    # Remove potentially dangerous characters but preserve normal text
-    sanitized = text.strip()
+    # Use bleach to sanitize the input with a whitelist of safe tags
+    # This is more secure than the blacklist approach
+    allowed_tags = ['p', 'br', 'strong', 'em', 'b', 'i', 'u', 'ol', 'ul', 'li']
+    allowed_attributes = {}  # No attributes allowed by default for security
 
-    # Remove any script tags (basic protection against XSS)
-    sanitized = re.sub(r'<script[^>]*>.*?</script>', '', sanitized, flags=re.IGNORECASE | re.DOTALL)
-    sanitized = re.sub(r'javascript:', '', sanitized, flags=re.IGNORECASE)
-    sanitized = re.sub(r'vbscript:', '', sanitized, flags=re.IGNORECASE)
-
-    # Remove other potentially dangerous patterns
-    sanitized = re.sub(r'eval\(', '', sanitized, flags=re.IGNORECASE)
-    sanitized = re.sub(r'expression\(', '', sanitized, flags=re.IGNORECASE)
+    # Clean the text using bleach with the allowed tags
+    sanitized = bleach.clean(text.strip(), tags=allowed_tags, attributes=allowed_attributes, strip=True)
 
     return sanitized
 

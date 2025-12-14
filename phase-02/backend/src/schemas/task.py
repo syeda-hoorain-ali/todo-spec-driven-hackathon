@@ -10,15 +10,28 @@ class CreateTaskRequest(BaseModel):
     # Due date and reminder fields
     due_date: Optional[datetime] = None  # When the task is due
     reminder_time: Optional[datetime] = None  # When to send a reminder
+    # Recurrence fields
+    is_recurring: bool = Field(default=False, description="Whether the task is recurring")
+    recurrence_pattern: Optional[str] = Field(None, max_length=50, description="Recurrence pattern: daily, weekly, monthly, yearly")
+    recurrence_interval: Optional[int] = Field(None, ge=1, description="Recurrence interval (e.g., every 2 weeks)")
+    end_date: Optional[datetime] = None  # When recurrence ends
+    max_occurrences: Optional[int] = Field(None, ge=1, description="Maximum number of occurrences")
 
 
 class UpdateTaskRequest(BaseModel):
     """Schema for updating a task with optional title and description."""
     title: Optional[str] = Field(None, min_length=1, max_length=255, description="Updated task title")
     description: Optional[str] = Field(None, max_length=1000, description="Updated task description")
+    completed: Optional[bool] = Field(None, description="Task completion status")
     # Due date and reminder fields
     due_date: Optional[datetime] = None  # When the task is due
     reminder_time: Optional[datetime] = None  # When to send a reminder
+    # Recurrence fields
+    is_recurring: Optional[bool] = Field(None, description="Whether the task is recurring")
+    recurrence_pattern: Optional[str] = Field(None, max_length=50, description="Recurrence pattern: daily, weekly, monthly, yearly")
+    recurrence_interval: Optional[int] = Field(None, ge=1, description="Recurrence interval (e.g., every 2 weeks)")
+    end_date: Optional[datetime] = None  # When recurrence ends
+    max_occurrences: Optional[int] = Field(None, ge=1, description="Maximum number of occurrences")
 
 
 class TaskResponse(BaseModel):
@@ -31,6 +44,13 @@ class TaskResponse(BaseModel):
     # Due date and reminder fields
     due_date: Optional[datetime] = None  # When the task is due
     reminder_time: Optional[datetime] = None  # When to send a reminder
+    # Recurrence fields
+    is_recurring: bool = False
+    recurrence_pattern: Optional[str] = None  # daily, weekly, monthly, yearly
+    recurrence_interval: Optional[int] = None  # How often to repeat (e.g., every 2 weeks)
+    next_occurrence: Optional[datetime] = None  # When the next occurrence is due
+    end_date: Optional[datetime] = None  # When recurrence ends
+    max_occurrences: Optional[int] = None  # Max number of occurrences
     created_at: datetime
     updated_at: datetime
 

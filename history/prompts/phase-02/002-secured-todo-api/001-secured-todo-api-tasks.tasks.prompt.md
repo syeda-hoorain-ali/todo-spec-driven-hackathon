@@ -32,8 +32,8 @@ divide plan into tasks, use approriate skills, ## **API Endpoints**
 | POST | /api/{user_id}/tasks | Create a new task |
 | GET | /api/{user_id}/tasks/{id} | Get task details |
 | PUT | /api/{user_id}/tasks/{id} | Update a task |
-| DELETE | /api/{user_id}tasks/{id} | Delete a task |
-| PATCH | /api/{user_id}tasks/{id}/complete | Toggle completion |
+| DELETE | /api/{user_id}/tasks/{id} | Delete a task |
+| PATCH | /api/{user_id}/tasks/{id}/complete | Toggle completion |
 Search & Filter – Search by keyword; filter by status, priority, or date
 Recurring Tasks – Auto-reschedule repeating tasks (e.g., "weekly meeting")
 Due Dates & Time Reminders – Set deadlines with date/time pickers;

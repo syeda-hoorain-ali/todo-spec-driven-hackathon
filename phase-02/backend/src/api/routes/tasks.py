@@ -10,12 +10,8 @@ try:
     from ...database.database import engine
     from ...auth.middleware import JWTBearer
     from ...config.settings import settings
-    from ...utils.exceptions import (
-        TaskNotFoundException, UnauthorizedAccessException,
-        InvalidRecurrencePatternException, InvalidReminderTimeException,
-        ValidationError
-    )
-    from ...utils.validation import validate_task_title, validate_task_description, validate_user_id, validate_task_id, sanitize_input
+    from ...utils.exceptions import InvalidRecurrencePatternException, InvalidReminderTimeException, ValidationError
+    from ...utils.validation import validate_task_title, validate_task_description, validate_user_id, validate_task_id
 except ImportError:
     # When running tests or as module, use absolute imports
     from src.schemas.task import CreateTaskRequest, TaskResponse, TaskListResponse, UpdateTaskRequest
@@ -23,12 +19,8 @@ except ImportError:
     from src.database.database import engine
     from src.auth.middleware import JWTBearer
     from src.config.settings import settings
-    from src.utils.exceptions import (
-        TaskNotFoundException, UnauthorizedAccessException,
-        InvalidRecurrencePatternException, InvalidReminderTimeException,
-        ValidationError
-    )
-    from src.utils.validation import validate_task_title, validate_task_description, validate_user_id, validate_task_id, sanitize_input
+    from src.utils.exceptions import InvalidRecurrencePatternException, InvalidReminderTimeException, ValidationError
+    from src.utils.validation import validate_task_title, validate_task_description, validate_user_id, validate_task_id
 
 router = APIRouter(prefix="/api/{user_id}", tags=["tasks"])
 security = JWTBearer()
@@ -51,11 +43,11 @@ def get_session_with_user_context(user_id: str = Path(...), token: str = Depends
     with Session(engine) as session:
         # Set the current user ID for RLS policies (only for PostgreSQL/production)
         if 'postgresql' in settings.database_url.lower():
-            session.exec(text(f"SET app.current_user_id = '{user_id}'"))
+            session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
         yield session
 
 
-@router.post("/tasks", response_model=TaskResponse)
+@router.post("/tasks", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 async def create_task(
     user_id: str,
     task_data: CreateTaskRequest,
@@ -153,17 +145,13 @@ async def get_tasks(
             completed=completed,
             date_from=date_from,
             date_to=date_to,
-            session=session
+            session=session,
+            skip=skip,
+            limit=limit
         )
     else:
         # Get all tasks for the user without filtering
         tasks = TaskService.get_tasks_by_user(user_id, session, skip, limit)
-
-    # Apply pagination manually if using search (since search doesn't use skip/limit)
-    if skip > 0 or limit < 100:
-        start_idx = skip
-        end_idx = skip + limit
-        tasks = tasks[start_idx:end_idx]
 
     task_responses = [
         TaskResponse(

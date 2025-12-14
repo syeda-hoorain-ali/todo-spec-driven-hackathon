@@ -6,9 +6,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/todoapp
-      - BETTER_AUTH_SECRET=your-better-auth-secret-here
-      - JWT_ALGORITHM=HS256
+      - DATABASE_URL=${DATABASE_URL}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - JWT_ALGORITHM=${JWT_ALGORITHM:-HS256}
     depends_on:
       - db
     volumes:
