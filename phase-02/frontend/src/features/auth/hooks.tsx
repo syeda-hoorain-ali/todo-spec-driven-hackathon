@@ -7,21 +7,21 @@ import { useEffect, useState } from "react";
 import { User } from "./types";
 import { useRouter } from "next/navigation";
 import {
-  changePasswordQuery,
-  forgotPasswordQuery,
-  resetPasswordQuery,
-  signInQuery,
-  signOutQuery,
-  signUpQuery,
-  updateUserQuery
-} from "./queries";
+  changePasswordAction,
+  forgotPasswordAction,
+  resetPasswordAction,
+  signInAction,
+  signOutAction,
+  signUpAction,
+  updateUserAction,
+} from "./actions";
 
 
 export const useAuth = () => {
   const router = useRouter();
 
   const signUp = useMutation({
-    mutationFn: signUpQuery,
+    mutationFn: signUpAction,
     onSuccess: () => {
       toast.success("Registration successful! Redirecting...");
       router.push("/dashboard");
@@ -34,7 +34,7 @@ export const useAuth = () => {
 
 
   const signIn = useMutation({
-    mutationFn: signInQuery,
+    mutationFn: signInAction,
     onSuccess: () => {
       toast.success("Sign in successful! Redirecting...");
       router.push("/dashboard");
@@ -47,7 +47,7 @@ export const useAuth = () => {
 
 
   const signOut = useMutation({
-    mutationFn: signOutQuery,
+    mutationFn: signOutAction,
     onSuccess: () => {
       toast.success("Successfully signed out");
       router.push("/sign-in"); // Redirect to sign-in page after sign-out
@@ -60,7 +60,7 @@ export const useAuth = () => {
 
 
   const forgotPassword = useMutation({
-    mutationFn: forgotPasswordQuery,
+    mutationFn: forgotPasswordAction,
     onError: ({ message }) => {
       console.error("Forgot password error:", message);
       if (message?.includes('rate limit')) {
@@ -76,7 +76,7 @@ export const useAuth = () => {
 
 
   const resetPassword = useMutation({
-    mutationFn: resetPasswordQuery,
+    mutationFn: resetPasswordAction,
     onSuccess: () => {
       toast.success("Password reset successful! Redirecting to sign in...");
       router.push("/sign-in");
@@ -89,7 +89,7 @@ export const useAuth = () => {
 
 
   const changePassword = useMutation({
-    mutationFn: changePasswordQuery,
+    mutationFn: changePasswordAction,
     onSuccess: () => {
       toast.success("Password changed successfully!");
     },
@@ -128,7 +128,7 @@ export const useUser = () => {
   }, [session]);
 
   const updateUserMutation = useMutation({
-    mutationFn: updateUserQuery,
+    mutationFn: updateUserAction,
     onSuccess: () => {
       toast.success("Profile updated successfully!");
       // Refetch user data to update context
