@@ -99,6 +99,8 @@ async def create_task(
             description=task.description,
             completed=task.completed,
             user_id=task.user_id,
+            category=task.category,
+            priority=task.priority,
             due_date=task.due_date,
             reminder_time=task.reminder_time,
             created_at=task.created_at,
@@ -129,6 +131,8 @@ async def get_tasks(
     limit: int = 100,
     keyword: Optional[str] = None,
     completed: Optional[bool] = None,
+    category: Optional[str] = None,
+    priority: Optional[str] = None,
     date_from: Optional[datetime] = None,
     date_to: Optional[datetime] = None,
     token: str = Depends(security),
@@ -138,7 +142,7 @@ async def get_tasks(
     # Note: Authorization is handled by the get_session_with_user_context dependency
 
     # Search and filter tasks based on parameters
-    if keyword or completed is not None or date_from or date_to:
+    if keyword or completed is not None or category or priority or date_from or date_to:
         tasks = TaskService.search_tasks(
             user_id=user_id,
             keyword=keyword,
@@ -146,6 +150,8 @@ async def get_tasks(
             date_from=date_from,
             date_to=date_to,
             session=session,
+            category=category,
+            priority=priority,
             skip=skip,
             limit=limit
         )
@@ -160,6 +166,8 @@ async def get_tasks(
             description=task.description,
             completed=task.completed,
             user_id=task.user_id,
+            category=task.category,
+            priority=task.priority,
             due_date=task.due_date,
             reminder_time=task.reminder_time,
             created_at=task.created_at,
@@ -199,6 +207,8 @@ async def get_task(
         description=task.description,
         completed=task.completed,
         user_id=task.user_id,
+        category=task.category,
+        priority=task.priority,
         due_date=task.due_date,
         reminder_time=task.reminder_time,
         created_at=task.created_at,
@@ -241,6 +251,8 @@ async def update_task(
         description=updated_task.description,
         completed=updated_task.completed,
         user_id=updated_task.user_id,
+        category=updated_task.category,
+        priority=updated_task.priority,
         due_date=updated_task.due_date,
         reminder_time=updated_task.reminder_time,
         created_at=updated_task.created_at,
@@ -301,6 +313,8 @@ async def toggle_task_completion(
         description=task.description,
         completed=task.completed,
         user_id=task.user_id,
+        category=task.category,
+        priority=task.priority,
         due_date=task.due_date,
         reminder_time=task.reminder_time,
         created_at=task.created_at,

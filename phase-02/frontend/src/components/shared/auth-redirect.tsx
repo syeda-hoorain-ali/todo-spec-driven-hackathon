@@ -1,6 +1,7 @@
 "use client";
 
-import { useSession } from "@/lib/auth/client";
+import { authClient } from "@/lib/auth/client";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Loading from "@/app/loading";
@@ -16,7 +17,19 @@ export function AuthRedirect({
   redirectTo = "/dashboard",
   requireAuth = false,
 }: AuthRedirectProps) {
-  const { data: session, isPending: isLoading } = useSession();
+
+  const {
+    data: session,
+    isLoading
+  } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const response = await authClient.getSession();
+      return response?.data || null;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   const router = useRouter();
 
   useEffect(() => {

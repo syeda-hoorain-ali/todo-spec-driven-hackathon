@@ -157,6 +157,16 @@ src/features/
 
 ## Implementation Patterns
 
+### Minimize Prop Drilling
+- Components should use hooks directly to access data rather than receiving functions through props
+- Dialogs and forms should use `use[Feature]` hooks directly instead of receiving callback functions
+- This reduces prop chains and makes components more self-contained
+
+### Centralized Configurations
+- Define shared configuration objects (options, display configs) in a central file like `src/features/[feature-name]/config.ts`
+- Import configurations in components instead of defining them locally to avoid duplication
+- This ensures consistency and easier maintenance across the application
+
 ### Hooks Pattern (`hooks.tsx`)
 ```tsx
 import { useMutation, useQuery } from "@tanstack/react-query";

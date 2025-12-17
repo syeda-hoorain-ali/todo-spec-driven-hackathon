@@ -31,6 +31,17 @@ Adhere to the specified technology stack: Next.js 16+, TypeScript, Tailwind CSS 
 ### Quality Assurance Standards
 Maintain high code quality through testing, documentation, and peer reviews. All features must include proper documentation and pass automated quality checks before acceptance.
 
+### Clean Code Architecture Standards
+All components and modules must follow clean architecture principles to ensure maintainability and scalability:
+
+- **Minimize Prop Drilling**: Components should use hooks directly to access data rather than receiving functions through props. Dialogs and forms should use `use[Feature]` hooks directly instead of receiving callback functions to reduce prop chains.
+
+- **Centralized Configurations**: Define shared configuration objects (options, display configs) in a central file like `src/features/[feature-name]/config.ts` to avoid duplication and ensure consistency.
+
+- **Component Minimalism**: Each component should have minimal necessary props, with complex logic encapsulated in hooks rather than passed through multiple prop layers.
+
+- **Icon Naming Convention**: All Lucide React icons must be imported with the "Icon" postfix (e.g., `PlusIcon`, `Trash2Icon`) to avoid naming conflicts.
+
 ## Additional Constraints
 
 ### Python Development Standards
@@ -73,4 +84,4 @@ This constitution supersedes all other development practices and guidelines. Ame
 
 All team members are expected to follow these principles consistently across all hackathon phases. Deviations must be documented and approved through the proper channels.
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-07 | **Last Amended**: 2025-12-07
+**Version**: 1.2.0 | **Ratified**: 2025-12-12 | **Last Amended**: 2025-12-12

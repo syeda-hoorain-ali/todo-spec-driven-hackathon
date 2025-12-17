@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export const env = createEnv({
     server: {
+        NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
         BETTER_AUTH_URL: z.string().default("http://localhost:3000"),
         BETTER_AUTH_SECRET: z.string(),
         DATABASE_URL: z.string(),
@@ -16,9 +17,12 @@ export const env = createEnv({
     },
     client: {
         NEXT_PUBLIC_BASE_URL: z.string(),
+        NEXT_PUBLIC_API_BASE_URL: z.string(),
     },
     runtimeEnv: {
+        NODE_ENV: process.env.NODE_ENV,
         NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+        NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
         BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
         BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
         DATABASE_URL: process.env.DATABASE_URL,
