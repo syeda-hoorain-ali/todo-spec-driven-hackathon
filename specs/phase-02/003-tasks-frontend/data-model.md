@@ -18,7 +18,7 @@
 - `recurrence_pattern`: 'daily' | 'weekly' | 'monthly' | 'yearly' (optional) - How often the task repeats
 - `recurrence_interval`: number (optional) - Interval for recurrence (e.g., every 2 weeks)
 - `next_occurrence`: string (optional, ISO 8601 datetime) - When the next occurrence is due
-- `end_date`: string (optional, ISO 8601 datetime) - When recurrence should stop
+- `recurrence_end_date`: string (optional, ISO 8601 datetime) - When recurrence should stop
 - `max_occurrences`: number (optional) - Maximum number of occurrences to create
 
 **Validation Rules**:
@@ -43,7 +43,7 @@
 - `is_recurring`: boolean (default: false)
 - `recurrence_pattern`: 'daily' | 'weekly' | 'monthly' | 'yearly' (optional)
 - `recurrence_interval`: number (optional, default: 1)
-- `end_date`: string (optional, ISO 8601 datetime)
+- `recurrence_recurrence_end_date`: string (optional, ISO 8601 datetime)
 - `max_occurrences`: number (optional)
 
 **For Task Update**:

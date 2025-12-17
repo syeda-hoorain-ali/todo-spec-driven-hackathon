@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, ClockIcon, RefreshCwIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/shadcn";
 import { useTasks } from "@/features/tasks/hooks";
 import { categoryOptions, priorityOptions, recurrenceOptions } from "@/features/tasks/config";
 

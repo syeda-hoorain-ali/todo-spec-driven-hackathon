@@ -43,7 +43,7 @@ def verify_token(token: str) -> Optional[dict]:
         kid = unverified_header.get("kid")
 
         if not kid or kid not in JWKS_KEYS:
-            print(f"Invalid or missing kid: {kid}")
+            # logging.warning(f"Invalid or missing kid in JWT: {kid}")
             return None
 
         # Get the JWK for this kid

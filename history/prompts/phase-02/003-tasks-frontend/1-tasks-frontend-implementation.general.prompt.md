@@ -16,24 +16,24 @@ links:
   adr: null
   pr: null
 files_yaml:
-  - D:\todo-app\specs\phase-02\003-tasks-frontend\spec.md
-  - D:\todo-app\specs\phase-02\003-tasks-frontend\plan.md
-  - D:\todo-app\specs\phase-02\003-tasks-frontend\tasks.md
-  - D:\todo-app\phase-02\frontend\src\app\(dashboard)\dashboard\page.tsx
-  - D:\todo-app\phase-02\frontend\src\features\tasks\types.ts
-  - D:\todo-app\phase-02\frontend\src\features\tasks\api.ts
-  - D:\todo-app\phase-02\frontend\src\features\tasks\queries.ts
-  - D:\todo-app\phase-02\frontend\src\features\tasks\hooks.tsx
-  - D:\todo-app\phase-02\frontend\src\components\tasks\task-list.tsx
-  - D:\todo-app\phase-02\frontend\src\components\tasks\task-item.tsx
-  - D:\todo-app\phase-02\frontend\src\components\tasks\task-form.tsx
-  - D:\todo-app\phase-02\frontend\src\components\tasks\task-filters.tsx
-  - D:\todo-app\phase-02\frontend\src\components\tasks\task-actions.tsx
-  - D:\todo-app\phase-02\frontend\src\lib\utils.ts
-  - D:\todo-app\phase-02\frontend\src\components\ui\checkbox.tsx
-  - D:\todo-app\phase-02\frontend\src\components\ui\dialog.tsx
+  - specs/phase-02/003-tasks-frontend/spec.md
+  - specs/phase-02/003-tasks-frontend/plan.md
+  - specs/phase-02/003-tasks-frontend/tasks.md
+  - phase-02/frontend/src/app/(dashboard)/dashboard/page.tsx
+  - phase-02/frontend/src/features/tasks/types.ts
+  - phase-02/frontend/src/features/tasks/api.ts
+  - phase-02/frontend/src/features/tasks/queries.ts
+  - phase-02/frontend/src/features/tasks/hooks.tsx
+  - phase-02/frontend/src/components/tasks/task-list.tsx
+  - phase-02/frontend/src/components/tasks/task-item.tsx
+  - phase-02/frontend/src/components/tasks/task-form.tsx
+  - phase-02/frontend/src/components/tasks/task-filters.tsx
+  - phase-02/frontend/src/components/tasks/task-actions.tsx
+  - phase-02/frontend/src/lib/utils.ts
+  - phase-02/frontend/src/components/ui/checkbox.tsx
+  - phase-02/frontend/src/components/ui/dialog.tsx
 tests_yaml:
-  - D:\todo-app\specs\phase-02\003-tasks-frontend\tasks.md
+  - specs/phase-02/003-tasks-frontend/tasks.md
 prompt_text: |
   Implement the complete task management frontend for the secured todo API backend.
   Create all necessary components, hooks, API services, and UI elements to support:

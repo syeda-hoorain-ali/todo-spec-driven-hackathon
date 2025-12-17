@@ -15,10 +15,10 @@ links:
   adr: null
   pr: null
 files:
-  - "/phase-02/frontend/src/features/tasks/hooks.tsx"
-  - "/phase-02/frontend/src/components/tasks/task-list.tsx"
-  - "/phase-02/frontend/src/components/tasks/task-filters.tsx"
-  - "/phase-02/frontend/src/app/(dashboard)/dashboard/page.tsx"
+  - "phase-02/frontend/src/features/tasks/hooks.tsx"
+  - "phase-02/frontend/src/components/tasks/task-list.tsx"
+  - "phase-02/frontend/src/components/tasks/task-filters.tsx"
+  - "phase-02/frontend/src/app/(dashboard)/dashboard/page.tsx"
 tests: []
 ---
 

@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/shadcn";
 import { format, isToday, isTomorrow, isPast } from "date-fns";
 import { useTasks } from "@/features/tasks/hooks";
 import { CheckedState } from "@radix-ui/react-checkbox";
