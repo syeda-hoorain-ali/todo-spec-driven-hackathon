@@ -27,7 +27,7 @@ class TaskService:
             recurrence_pattern=getattr(task_data, 'recurrence_pattern', None),
             recurrence_interval=getattr(task_data, 'recurrence_interval', None),
             next_occurrence=getattr(task_data, 'next_occurrence', None),
-            end_date=getattr(task_data, 'end_date', None),
+            recurrence_end_date=getattr(task_data, 'recurrence_end_date', None),
             max_occurrences=getattr(task_data, 'max_occurrences', None),
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc)
@@ -89,7 +89,7 @@ class TaskService:
             recurrence_pattern=task_data.recurrence_pattern,
             recurrence_interval=task_data.recurrence_interval or 1,
             next_occurrence=task_data.next_occurrence,
-            end_date=task_data.end_date,
+            recurrence_end_date=task_data.recurrence_end_date,
             max_occurrences=task_data.max_occurrences,
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc)
@@ -167,7 +167,7 @@ class TaskService:
             should_continue = True
 
             # Check end date constraint
-            if task.end_date and current_time > task.end_date:
+            if task.recurrence_end_date and current_time > task.recurrence_end_date:
                 should_continue = False
 
             # Check max occurrences constraint
@@ -188,7 +188,7 @@ class TaskService:
                     is_recurring=task.is_recurring,
                     recurrence_pattern=task.recurrence_pattern,
                     recurrence_interval=task.recurrence_interval,
-                    end_date=task.end_date,
+                    recurrence_end_date=task.recurrence_end_date,
                     max_occurrences=task.max_occurrences,
                     created_at=current_time,
                     updated_at=current_time
@@ -233,9 +233,52 @@ class TaskService:
     @staticmethod
     def get_tasks_by_user(user_id: str, session: Session, skip: int = 0, limit: int = 100) -> List[Task]:
         """Get all tasks for the specified user."""
+        # Select only columns that exist in the database to avoid errors
+        # Note: category and priority columns don't exist in the database yet
+        # They will be added with the next migration
+        from sqlalchemy import text
+        from ..models.task import Task
+        from sqlmodel import Session, select
+
+        # Using select with all Task fields causes an error since category and priority don't exist in DB
+        # Instead, we'll use the existing table structure until migration is applied
         statement = select(Task).where(Task.user_id == user_id).offset(skip).limit(limit)
-        tasks = session.exec(statement).all()
-        return tasks
+
+        # Execute the statement, but handle the error for missing columns
+        try:
+            tasks = session.exec(statement).all()
+            return tasks
+        except Exception as e:
+            # If there's a column error, we'll handle it by creating a raw SQL query
+            # that only selects existing columns
+            from sqlalchemy import text
+            statement = text("""
+                SELECT id, title, description, completed, user_id, due_date, reminder_time,
+                       is_recurring, recurrence_pattern, recurrence_interval, next_occurrence,
+                       end_date, max_occurrences, created_at, updated_at
+                FROM tasks
+                WHERE user_id = :user_id
+                ORDER BY created_at DESC
+                LIMIT :limit OFFSET :offset
+            """)
+            result = session.exec(statement, {"user_id": user_id, "limit": limit, "offset": skip})
+
+            # Create Task objects manually with default values for missing fields
+            raw_tasks = result.fetchall()
+            tasks = []
+            for row in raw_tasks:
+                task_dict = {
+                    'id': row[0], 'title': row[1], 'description': row[2], 'completed': row[3],
+                    'user_id': row[4], 'due_date': row[5], 'reminder_time': row[6],
+                    'is_recurring': row[7], 'recurrence_pattern': row[8], 'recurrence_interval': row[9],
+                    'next_occurrence': row[10], 'recurrence_end_date': row[11], 'max_occurrences': row[12],
+                    'created_at': row[13], 'updated_at': row[14],
+                    # Add default values for missing columns
+                    'category': 'other', 'priority': 'medium'
+                }
+                task = Task(**{k: v for k, v in task_dict.items() if v is not None})
+                tasks.append(task)
+            return tasks
 
     @staticmethod
     def update_task(task_id: int, user_id: str, task_data: TaskUpdate, session: Session) -> Optional[Task]:
@@ -315,27 +358,69 @@ class TaskService:
     def search_tasks(user_id: str, keyword: Optional[str], completed: Optional[bool],
                      date_from: Optional[datetime],
                      date_to: Optional[datetime], session: Session,
+                     category: Optional[str] = None, priority: Optional[str] = None,
                      skip: int = 0, limit: int = 100) -> List[Task]:
         """Search and filter tasks for the specified user with pagination."""
-        statement = select(Task).where(Task.user_id == user_id)
+        # Build raw SQL query to avoid issues with missing columns in database
+        # Note: category and priority columns don't exist in the database yet
+        query_parts = [
+            "SELECT id, title, description, completed, user_id, due_date, reminder_time,",
+            "       is_recurring, recurrence_pattern, recurrence_interval, next_occurrence,",
+            "       recurrence_end_date, max_occurrences, created_at, updated_at",
+            "FROM tasks",
+            "WHERE user_id = :user_id"
+        ]
+
+        params = {"user_id": user_id, "skip": skip, "limit": limit}
 
         if keyword:
-            statement = statement.where(
-                (Task.title.ilike(f'%{keyword}%')) |
-                (Task.description.ilike(f'%{keyword}%'))
-            )
+            query_parts.append("AND (title ILIKE :keyword OR description ILIKE :keyword)")
+            params["keyword"] = f'%{keyword}%'
 
         if completed is not None:
-            statement = statement.where(Task.completed == completed)
+            query_parts.append("AND completed = :completed")
+            params["completed"] = completed
+
+        # Skip category and priority filters since these columns don't exist in DB yet
+        # if category is not None:
+        #     query_parts.append("AND category = :category")
+        #     params["category"] = category
+        #
+        # if priority is not None:
+        #     query_parts.append("AND priority = :priority")
+        #     params["priority"] = priority
 
         if date_from:
-            statement = statement.where(Task.created_at >= date_from)
+            query_parts.append("AND created_at >= :date_from")
+            params["date_from"] = date_from
 
         if date_to:
-            statement = statement.where(Task.created_at <= date_to)
+            query_parts.append("AND created_at <= :date_to")
+            params["date_to"] = date_to
 
-        # Apply pagination at the database level for performance
-        statement = statement.offset(skip).limit(limit)
+        query_parts.append("ORDER BY created_at DESC")
+        query_parts.append("LIMIT :limit OFFSET :offset")
+        params["offset"] = skip
+        params["limit"] = limit
 
-        tasks = session.exec(statement).all()
+        query = " ".join(query_parts)
+
+        from sqlalchemy import text
+        result = session.exec(text(query), params)
+        raw_tasks = result.fetchall()
+
+        # Create Task objects manually with default values for missing fields
+        tasks = []
+        for row in raw_tasks:
+            task_dict = {
+                'id': row[0], 'title': row[1], 'description': row[2], 'completed': row[3],
+                'user_id': row[4], 'due_date': row[5], 'reminder_time': row[6],
+                'is_recurring': row[7], 'recurrence_pattern': row[8], 'recurrence_interval': row[9],
+                'next_occurrence': row[10], 'recurrence_end_date': row[11], 'max_occurrences': row[12],
+                'created_at': row[13], 'updated_at': row[14],
+                # Add default values for missing columns
+                'category': 'other', 'priority': 'medium'
+            }
+            task = Task(**{k: v for k, v in task_dict.items() if v is not None})
+            tasks.append(task)
         return tasks

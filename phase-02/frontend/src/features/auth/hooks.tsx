@@ -1,10 +1,8 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "@/lib/auth/client";
-import { toast } from "sonner";
-import { useEffect, useState } from "react";
-import { User } from "./types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { authClient } from "@/lib/auth/client";
+import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import {
   changePasswordAction,
@@ -41,7 +39,7 @@ export const useAuth = () => {
     },
     onError: (error) => {
       console.error("Sign in error:", error);
-      toast.error("An unexpected error occurred during sign in");
+      toast.error(error.message || "An unexpected error occurred during sign in");
     },
   });
 
@@ -66,7 +64,7 @@ export const useAuth = () => {
       if (message?.includes('rate limit')) {
         toast.error("Too many requests. Please try again later.");
       } else {
-        toast.error("An unexpected error occurred. Please try again.");
+        toast.error(message || "An unexpected error occurred. Please try again.");
       }
     },
     onSuccess: () => {
@@ -111,21 +109,24 @@ export const useAuth = () => {
 
 
 export const useUser = () => {
-
-  const { data: session, isPending: isLoading, error, refetch } = useSession();
   const queryClient = useQueryClient();
-  const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    if (session) {
-      setUser(session.user);
-    } else {
-      setUser(null);
-    }
-    console.log(user);
-    console.log(session);
-    console.log(isLoading);
-  }, [session]);
+  const {
+    data: session,
+    isLoading,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const response = await authClient.getSession();
+      return response?.data || null;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000,   // 10 minutes
+  });
+
+  const user = session?.user || null;
 
   const updateUserMutation = useMutation({
     mutationFn: updateUserAction,
@@ -135,12 +136,12 @@ export const useUser = () => {
       refetch();
       // Invalidate and refetch user query to update dashboard/profile page
       queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["session"] });
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to update profile");
     },
   });
-
 
   return {
     updateUser: updateUserMutation,

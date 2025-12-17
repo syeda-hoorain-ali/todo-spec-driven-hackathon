@@ -5,10 +5,11 @@ import { useAuth, useUser } from "@/features/auth/hooks";
 import { CoffeeIcon, LogOutIcon, UserIcon, HomeIcon, LogInIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
 
 export function Navbar() {
-  const { signOut: { mutate: signOut } } = useAuth();
   const { user } = useUser();
+  const { signOut: { mutate: signOut } } = useAuth();
   const pathname = usePathname();
 
   // if (!user) return null;
@@ -55,8 +56,8 @@ export function Navbar() {
             </nav>}
         </div>
 
-        {user ?
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          {user ? <>
             <Link href="/profile" className="md:hidden">
               <Button variant="ghost" size="icon">
                 <UserIcon className="w-4 h-4" />
@@ -66,9 +67,7 @@ export function Navbar() {
               <LogOutIcon className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">Sign Out</span>
             </Button>
-          </div>
-          :
-          <div className="flex items-center gap-2">
+          </> : <>
             <Link href="/sign-in">
               <Button variant="outline" size="sm">
                 <LogInIcon className="w-4 h-4 mr-2" />
@@ -80,8 +79,9 @@ export function Navbar() {
                 Create Account
               </Button>
             </Link>
-          </div>
-        }
+          </>}
+          <AnimatedThemeToggler />
+        </div>
       </div>
     </header>
   );

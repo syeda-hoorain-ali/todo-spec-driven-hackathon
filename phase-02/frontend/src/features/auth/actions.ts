@@ -14,7 +14,7 @@ import { env } from "@/utils/env";
 
 
 export async function signUpAction({ name, email, password }: SignUpFormData) {
-  await auth.api.signUpEmail({
+  return await auth.api.signUpEmail({
     body: {
       name,
       email,
@@ -26,7 +26,7 @@ export async function signUpAction({ name, email, password }: SignUpFormData) {
 
 
 export async function signInAction({ email, password }: SignInFormData) {
-  await auth.api.signInEmail({
+  return await auth.api.signInEmail({
     body: {
       email,
       password,
@@ -35,13 +35,13 @@ export async function signInAction({ email, password }: SignInFormData) {
 }
 
 export async function signOutAction() {
-  await auth.api.signOut({
+  return await auth.api.signOut({
     headers: await headers(),
   });
 }
 
 export async function forgotPasswordAction({ email }: ForgotPasswordFormData) {
-  await auth.api.requestPasswordReset({
+  return await auth.api.requestPasswordReset({
     body: {
       email,
       redirectTo: env.NEXT_PUBLIC_BASE_URL + "/reset-password",
@@ -53,7 +53,7 @@ export async function forgotPasswordAction({ email }: ForgotPasswordFormData) {
 export async function resetPasswordAction(
   { password, token }: ResetPasswordFormData & { token: string }
 ) {
-  await auth.api.resetPassword({
+  return await auth.api.resetPassword({
     body: {
       newPassword: password,
       token
@@ -63,14 +63,14 @@ export async function resetPasswordAction(
 }
 
 export async function updateUserAction({ name }: ProfileFormData) {
-  await auth.api.updateUser({
+  return await auth.api.updateUser({
     body: { name },
     headers: await headers(),
   })
 }
 
 export async function changePasswordAction({ currentPassword, newPassword }: ChangePasswordFormData) {
-  await auth.api.changePassword({
+  return await auth.api.changePassword({
     body: {
       currentPassword,
       newPassword,

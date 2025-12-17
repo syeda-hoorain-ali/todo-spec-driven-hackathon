@@ -208,3 +208,10 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Active Technologies
+- TypeScript 5.0+, React 19, Next.js 16+ + Next.js, React, React Query, Better Auth, Tailwind CSS, date-fns, react-hook-form, zod (phase-02/003-tasks-frontend)
+- N/A (client-side state management via React Query) (phase-02/003-tasks-frontend)
+
+## Recent Changes
+- phase-02/003-tasks-frontend: Added TypeScript 5.0+, React 19, Next.js 16+ + Next.js, React, React Query, Better Auth, Tailwind CSS, date-fns, react-hook-form, zod

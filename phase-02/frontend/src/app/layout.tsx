@@ -4,6 +4,7 @@ import { ReactQueryClientProvider } from "@/components/providers";
 import { DM_Sans, Crimson_Pro } from "next/font/google"
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Toaster } from "react-hot-toast";
 
 
 const dmSans = DM_Sans({
@@ -26,7 +27,7 @@ const crimsonPro = Crimson_Pro({
 export const metadata: Metadata = {
   title: {
     template: "%s | TaskFlow",
-    default: "TaskFlow - Your AI-powered productivity companion", 
+    default: "TaskFlow - Your AI-powered productivity companion",
   },
   description: "Your AI-powered productivity companion",
 };
@@ -50,6 +51,10 @@ export default function RootLayout({
         <ReactQueryClientProvider>
           <Navbar />
           {children}
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+          />
           <Footer />
         </ReactQueryClientProvider>
       </body>

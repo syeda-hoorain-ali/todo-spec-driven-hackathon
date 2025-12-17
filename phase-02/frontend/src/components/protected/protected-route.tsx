@@ -1,10 +1,12 @@
 "use client";
 
-import { useSession } from "@/lib/auth/client";
+import { authClient } from "@/lib/auth/client";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import Loading from "@/app/loading";
+import { InfoIcon } from "lucide-react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -15,12 +17,26 @@ export function ProtectedRoute({
   children,
   redirectTo = "/sign-in"
 }: ProtectedRouteProps) {
-  const { data: session, isPending: isLoading } = useSession();
+  const {
+    data: session,
+    isLoading
+  } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const response = await authClient.getSession();
+      return response?.data || null;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   const router = useRouter();
 
   useEffect(() => {
     if (!isLoading && !session) {
-      toast.info("Please sign in to access this page");
+      toast(
+        "Please sign in to access this page",
+        { icon: <InfoIcon className="text-category-work" /> }
+      );
       router.push(redirectTo);
     }
   }, [session, isLoading, router, redirectTo]);

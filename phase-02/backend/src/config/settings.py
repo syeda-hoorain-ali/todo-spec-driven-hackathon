@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # Better Auth settings
     better_auth_secret: str
-    jwt_algorithm: str = "HS256"
+    jwt_algorithm: str = "EdDSA"
 
     # Application settings
     environment: str = "development"

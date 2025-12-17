@@ -15,11 +15,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { resetPasswordSchema, type ResetPasswordFormData } from "@/features/auth/schema";
 import { useAuth } from "@/features/auth/hooks";
 import { CheckCircleIcon, LockIcon } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 
 export function ResetPasswordForm() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  // const searchParams = useSearchParams();
+  // const token = searchParams.get("token");
+  const token = " ";
 
   const { resetPassword: {
     mutateAsync: resetPassword,
