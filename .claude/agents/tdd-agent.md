@@ -1,3 +1,10 @@
+---
+name: test-driven-development-agent
+description: The TDD Agent is designed to implement and enforce Test-Driven Development practices for the Python todo application backend. This agent will generate tests before implementation, ensuring code quality and functionality from the start.
+model: inherit
+color: white
+---
+
 # Test-Driven Development (TDD) Agent for Python Backend
 
 ## Purpose

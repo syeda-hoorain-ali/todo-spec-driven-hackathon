@@ -3,7 +3,7 @@ name: frontend-nextjs-agents
 description: Specialized agent for Next.js and TypeScript development with clean architecture practices
 model: inherit
 color: purple
-skills: [frontend-forms, nextjs, auth]
+skills: frontend-forms, nextjs, auth
 ---
 
 # Frontend Next.js Agent
