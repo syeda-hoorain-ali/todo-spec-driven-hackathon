@@ -1,9 +1,8 @@
 """Unit tests for JWT utilities."""
 
 import os
-from datetime import datetime, timedelta, timezone
 import base64
-import jwt as pyjwt  # Using PyJWT for creating test tokens
+import pyjwt  # Using PyJWT for creating test tokens
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 import pytest
