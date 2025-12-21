@@ -2,9 +2,9 @@ import logging
 from datetime import datetime
 import os
 
-# Create logs directory if it doesn't exist
-if not os.path.exists('logs'):
-    os.makedirs('logs')
+# Create temporary logs directory if it doesn't exist
+if not os.path.exists('tmp/logs'):
+    os.makedirs('tmp/logs')
 
 # Configure logging
 def setup_logging():
@@ -14,7 +14,7 @@ def setup_logging():
     )
 
     # Create file handler
-    file_handler = logging.FileHandler(f'logs/app_{datetime.now().strftime("%Y%m%d")}.log')
+    file_handler = logging.FileHandler(f'tmp/logs/app_{datetime.now().strftime("%Y%m%d")}.log')
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
 
