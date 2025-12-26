@@ -97,7 +97,7 @@ export const useTasks = (initialBackendFilters?: GetTasksFilters) => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['task', variables] });
+      queryClient.invalidateQueries({ queryKey: ['task', variables.id] });
     },
   });
 
