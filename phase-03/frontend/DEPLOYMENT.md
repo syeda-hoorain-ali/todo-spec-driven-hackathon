@@ -14,7 +14,7 @@ This script automates the deployment of the Next.js application with Better Auth
 Before deployment, ensure the following environment variables are set in your production environment:
 
 ```bash
-NEXT_PUBLIC_BASE_URL=""
+NEXT_PUBLIC_BASE_URL="https://yourdomain.com"
 
 # Better Auth Configuration
 AUTH_SECRET=your-production-jwt-secret-here-make-sure-it-is-at-least-32-characters-long
