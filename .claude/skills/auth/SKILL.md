@@ -1,3 +1,8 @@
+---
+name: better-auth-implementation-for-nextjs-fastapi
+description: This skill provides guidance for implementing secure authentication using Better Auth for Next.js frontend and JWT verification for FastAPI backend.
+---
+
 # Better Authentication Implementation for Next.js + FastAPI
 
 ## Overview

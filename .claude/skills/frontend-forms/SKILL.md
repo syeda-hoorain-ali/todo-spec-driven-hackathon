@@ -1,3 +1,8 @@
+---
+name: form-patterens-and-best-practices
+description: This skill provides guidance for creating consistent, well-structured forms in Next.js/react applications using shadcn UI components, react-hook-form, and Zod validation.
+---
+
 # Form Patterns and Best Practices
 
 ## Overview

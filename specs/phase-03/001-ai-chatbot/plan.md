@@ -7,7 +7,7 @@
 
 ## Summary
 
-Implementation of an AI-powered chatbot interface that allows users to manage their todo tasks through natural language conversations. The system builds upon the existing Phase-02 full-stack application by copying the structure, then adds an OpenAI ChatKit frontend component, Python-based AI agent with MCP server for task operations, and integrates with the existing authentication system. The architecture enables conversational task management with context awareness and MCP-protocol tool execution.
+Implementation of an AI-powered chatbot interface that allows users to manage their todo tasks through natural language conversations. The system builds upon the existing Phase-02 full-stack application by copying the structure, then adds an OpenAI ChatKit frontend component, Python-based AI agent with MCP server for task operations (using Neon HTTP MCP server as placeholder for now), and integrates with ChatKit stores connected to Neon DB for conversation persistence. The architecture enables conversational task management with context awareness and MCP-protocol tool execution, with future plans to implement custom MCP server.
 
 ## Technical Context
 
@@ -78,10 +78,14 @@ phase-03/                          # Copied from phase-02
     │   │   └── auth_service.py   # Authentication service from Phase-02
     │   ├── api/
     │   │   └── routes/
-    │   │       └── chat_routes.py    # New chat API endpoints
+    │   │       └── chat_routes.py    # New chat API endpoints with ChatKit integration
     │   ├── agents/
     │   │   ├── chat_agent.py     # New OpenAI Agent implementation
     │   │   └── task_tools.py     # New MCP task operation tools
+    │   ├── services/
+    │   │   ├── chat_service.py   # New chat business logic
+    │   │   ├── chatkit_stores.py # ChatKit stores connecting to Neon DB
+    │   │   └── chatkit_server.py # ChatKit server implementation
     │   └── config/
     │       ├── database.py       # Database configuration from Phase-02
     │       └── settings.py       # Application settings from Phase-02

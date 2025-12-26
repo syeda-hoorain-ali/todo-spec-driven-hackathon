@@ -1,3 +1,8 @@
+---
+name: python-uv-project-management-skill
+description: This skill provides commands for managing Python projects using `uv`, a fast Python package installer and resolver.
+---
+
 # Python UV Project Management Skill
 
 This skill provides commands for managing Python projects using `uv`, a fast Python package installer and resolver.

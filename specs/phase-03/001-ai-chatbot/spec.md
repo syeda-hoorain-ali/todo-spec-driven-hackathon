@@ -76,7 +76,7 @@ As an authenticated user, I want the chatbot to perform all basic task operation
 ### Functional Requirements
 
 - **FR-001**: System MUST process natural language input to understand task management intents
-- **FR-002**: System MUST integrate with MCP server to execute task operations as tools
+- **FR-002**: System MUST integrate with MCP server to execute task operations as tools (using Neon HTTP MCP server as placeholder for now)
 - **FR-003**: Users MUST be able to create tasks via natural language commands
 - **FR-004**: Users MUST be able to view their tasks via natural language queries
 - **FR-005**: Users MUST be able to update task details via natural language commands
@@ -86,7 +86,7 @@ As an authenticated user, I want the chatbot to perform all basic task operation
 - **FR-009**: System MUST provide helpful, natural language responses to user queries
 - **FR-010**: System MUST handle ambiguous requests by asking for clarification
 - **FR-011**: System MUST integrate with existing authentication system (Better Auth JWT)
-- **FR-012**: System MUST store conversation history in the database
+- **FR-012**: System MUST store conversation history in the database using ChatKit stores
 - **FR-013**: System MUST expose chat functionality via FastAPI /chat endpoint
 - **FR-014**: System MUST support multi-turn conversations with context awareness
 - **FR-015**: System MUST handle errors gracefully and provide user-friendly error messages
@@ -95,6 +95,10 @@ As an authenticated user, I want the chatbot to perform all basic task operation
 - **FR-018**: System MUST implement rate limiting for chat endpoints (max 10 requests per user per minute)
 - **FR-019**: System MUST provide appropriate HTTP 429 responses when rate limits are exceeded
 - **FR-020**: System MUST gracefully handle authentication token expiration by prompting user to re-authenticate while preserving conversation context
+- **FR-021**: System MUST integrate with ChatKit for conversation management and storage
+- **FR-022**: System MUST connect ChatKit stores to Neon DB to persist conversations
+- **FR-023**: System MUST expose ChatKit server via FastAPI endpoint for frontend integration
+- **FR-024**: System MUST provide React ChatKit integration for frontend chat interface
 ### Key Entities *(include if feature involves data)*
 
 - **Conversation**: Represents a chat session with context, containing user_id, id, created_at, updated_at
@@ -112,6 +116,9 @@ As an authenticated user, I want the chatbot to perform all basic task operation
 - **SC-005**: 90% of users find the chatbot responses helpful and natural
 - **SC-006**: System correctly isolates user data ensuring users only see their own tasks 100% of the time
 - **SC-007**: Authentication validation occurs correctly for all chat interactions 100% of the time
-- **SC-008**: Conversation history persists correctly between sessions with 99% reliability
+- **SC-008**: Conversation history persists correctly between sessions with 99% reliability using ChatKit stores
 - **SC-009**: System handles ambiguous requests appropriately by asking for clarification in 85% of cases
 - **SC-010**: 95% of chatbot interactions result in successful task management outcomes
+- **SC-011**: ChatKit integration successfully stores and retrieves conversations from Neon DB with 99% reliability
+- **SC-012**: Frontend successfully connects to ChatKit server and displays conversation history 95% of the time
+- **SC-013**: ChatKit server endpoints are accessible via FastAPI with proper authentication 100% of the time
