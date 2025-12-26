@@ -324,7 +324,7 @@
 }
 
 #chatkit-container main div button {
-  @apply py-2 px-1 bg-red-400!
+  @apply py-2 px-1
 }
 
 /* Custom scrollbar */
