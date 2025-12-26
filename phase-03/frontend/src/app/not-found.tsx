@@ -5,9 +5,6 @@ import { ArrowLeftIcon, HomeIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-
 const NotFound = () => {
   const router = useRouter();
 
