@@ -35,13 +35,13 @@ Establish phase-03 project structure by copying phase-02 and setting up basic ch
 
 ### Tasks
 
-- [ ] T001 Copy phase-02 frontend directory to phase-03/frontend
-- [ ] T002 Copy phase-02 backend directory to phase-03/backend
-- [ ] T003 Update frontend package.json to reflect phase-03
-- [ ] T004 Update backend requirements.txt with AI/MCP dependencies
-- [ ] T005 Install ChatKit React library in frontend
-- [ ] T006 Install OpenAI and MCP SDK in backend
-- [ ] T007 Update README files to single heading as requested
+- [X] T001 Copy phase-02 frontend directory to phase-03/frontend
+- [X] T002 Copy phase-02 backend directory to phase-03/backend
+- [X] T003 Update frontend package.json to reflect phase-03
+- [X] T004 Update backend requirements.txt with AI/MCP dependencies
+- [X] T005 Install ChatKit React library in frontend
+- [X] T006 Install OpenAI and MCP SDK in backend
+- [X] T007 Update README files to single heading as requested
 
 ---
 
@@ -57,14 +57,14 @@ Implement foundational data models and services needed for all user stories.
 
 ### Tasks
 
-- [ ] T008 [P] Create Conversation model in phase-03/backend/src/models/conversation.py
-- [ ] T009 [P] Create Message model in phase-03/backend/src/models/message.py
-- [ ] T010 [P] Update database configuration for new models in phase-03/backend/src/config/database.py
-- [ ] T011 [P] Create ChatService in phase-03/backend/src/services/chat_service.py
-- [ ] T012 [P] Create TaskTools for MCP in phase-03/backend/src/agents/task_tools.py
-- [ ] T013 [P] Create ChatAgent in phase-03/backend/src/agents/chat_agent.py
-- [ ] T014 [P] Create chat API routes in phase-03/backend/src/api/routes/chat_routes.py
-- [ ] T015 [P] Update authentication service to support chat endpoints in phase-03/backend/src/services/auth_service.py
+- [X] T008 [P] Create Conversation model in phase-03/backend/src/models/conversation.py
+- [X] T009 [P] Create Message model in phase-03/backend/src/models/message.py
+- [X] T010 [P] Update database configuration for new models in phase-03/backend/src/config/database.py
+- [X] T011 [P] Create ChatService in phase-03/backend/src/services/chat_service.py
+- [X] T012 [P] Create TaskTools for MCP in phase-03/backend/src/agents/task_tools.py
+- [X] T013 [P] Create ChatAgent in phase-03/backend/src/agents/chat_agent.py
+- [X] T014 [P] Create chat API routes in phase-03/backend/src/api/routes/chat_routes.py
+- [X] T015 [P] Update authentication service to support chat endpoints in phase-03/backend/src/services/auth_service.py
 
 ---
 
@@ -80,15 +80,15 @@ Enable users to manage todo tasks through natural language conversation with the
 
 ### Tasks
 
-- [ ] T016 [US1] Create chat interface component using ChatKit React in phase-03/frontend/src/components/chat/chat-interface.tsx
-- [ ] T017 [US1] Integrate chat component into dashboard page in phase-03/frontend/src/app/(dashboard)/page.tsx
-- [ ] T018 [US1] Create chat API client in phase-03/frontend/src/features/chat/api.ts
-- [ ] T019 [US1] Create chat hooks for state management in phase-03/frontend/src/features/chat/hooks.tsx
-- [ ] T020 [US1] Create chat types definition in phase-03/frontend/src/features/chat/types.ts
-- [ ] T021 [US1] Create chat queries for API calls in phase-03/frontend/src/features/chat/queries.ts
-- [ ] T022 [US1] Implement chat endpoint in backend to handle natural language input in phase-03/backend/src/api/routes/chat_routes.py
-- [ ] T023 [US1] Connect chat endpoint to ChatAgent with task tools in phase-03/backend/src/agents/chat_agent.py
-- [ ] T024 [US1] Test natural language task creation functionality
+- [X] T016 [US1] Create chat interface component using ChatKit React in phase-03/frontend/src/components/chat/chat-interface.tsx
+- [X] T017 [US1] Integrate chat component into dashboard page in phase-03/frontend/src/app/(dashboard)/dashboard/page.tsx
+- [X] T018 [US1] Create chat API client in phase-03/frontend/src/features/chat/api.ts
+- [X] T019 [US1] Create chat hooks for state management in phase-03/frontend/src/features/chat/hooks.tsx
+- [X] T020 [US1] Create chat types definition in phase-03/frontend/src/features/chat/types.ts
+- [X] T021 [US1] Create chat queries for API calls in phase-03/frontend/src/features/chat/queries.ts
+- [X] T022 [US1] Implement chat endpoint in backend to handle natural language input in phase-03/backend/src/api/routes/chat_routes.py
+- [X] T023 [US1] Connect chat endpoint to ChatAgent with task tools in phase-03/backend/src/agents/chat_agent.py
+- [X] T024 [US1] Test natural language task creation functionality
 
 ---
 
@@ -104,35 +104,55 @@ Enable the chatbot to maintain context across multiple exchanges for natural, fl
 
 ### Tasks
 
-- [ ] T025 [US2] Implement conversation history storage in phase-03/backend/src/services/chat_service.py
-- [ ] T026 [US2] Update ChatAgent to maintain conversation context in phase-03/backend/src/agents/chat_agent.py
-- [ ] T027 [US2] Add conversation ID tracking in frontend chat component in phase-03/frontend/src/components/chat/chat-interface.tsx
-- [ ] T028 [US2] Implement message history loading in phase-03/frontend/src/features/chat/queries.ts
-- [ ] T029 [US2] Test multi-turn conversation functionality with context awareness
+- [X] T025 [US2] Implement conversation history storage in phase-03/backend/src/services/chat_service.py
+- [X] T026 [US2] Update ChatAgent to maintain conversation context in phase-03/backend/src/agents/chat_agent.py
+- [X] T027 [US2] Add conversation ID tracking in frontend chat component in phase-03/frontend/src/components/chat/chat-interface.tsx
+- [X] T028 [US2] Implement message history loading in phase-03/frontend/src/features/chat/queries.ts
+- [X] T029 [US2] Test multi-turn conversation functionality with context awareness
 
 ---
 
 ## Phase 5: User Story 3 - MCP-Enabled Task Operations [P2]
 
 ### Goal
-Enable the chatbot to perform all basic task operations (create, read, update, delete) through natural language using MCP protocol.
+Enable the chatbot to perform all basic task operations (create, read, update, delete) through natural language using MCP protocol (using Neon HTTP MCP server as placeholder for now).
 
 ### Independent Test Criteria
 - All basic task operations (CRUD) work correctly through natural language commands
-- MCP tools properly execute task operations
+- MCP tools properly execute task operations via Neon HTTP server
 - User can perform complex task management through conversation
 
 ### Tasks
 
-- [ ] T030 [US3] Implement MCP server integration in phase-03/backend/src/agents/chat_agent.py
-- [ ] T031 [US3] Enhance task tools with full CRUD operations in phase-03/backend/src/agents/task_tools.py
-- [ ] T032 [US3] Test all task operations through natural language commands
-- [ ] T033 [US3] Implement error handling for MCP operations in phase-03/backend/src/agents/chat_agent.py
-- [ ] T034 [US3] Add validation for task operations in phase-03/backend/src/services/task_service.py
+- [X] T030 [US3] Implement MCP server integration using Neon HTTP server in phase-03/backend/src/agents/chat_agent.py
+- [X] T031 [US3] Enhance task tools with full CRUD operations in phase-03/backend/src/agents/task_tools.py
+- [X] T032 [US3] Test all task operations through natural language commands
+- [X] T033 [US3] Implement error handling for MCP operations in phase-03/backend/src/agents/chat_agent.py
+- [X] T034 [US3] Add validation for task operations in phase-03/backend/src/services/task_service.py
 
 ---
 
-## Phase 6: Cross-cutting Features & Polish
+## Phase 6: ChatKit Integration [P1]
+
+### Goal
+Integrate ChatKit for conversation management and storage, connecting to Neon DB for persistence.
+
+### Independent Test Criteria
+- ChatKit stores successfully connect to Neon DB
+- Conversation history persists between sessions
+- Frontend successfully connects to ChatKit server
+- ChatKit endpoints are accessible via FastAPI with authentication
+
+### Tasks
+
+- [X] T035 [P1] Create ChatKit stores implementation connecting to Neon DB in phase-03/backend/src/services/chatkit_stores.py
+- [X] T036 [P1] Create ChatKit server implementation in phase-03/backend/src/services/chatkit_server.py
+- [X] T037 [P1] Integrate ChatKit server with existing chat routes in phase-03/backend/src/api/routes/chat_routes.py
+- [X] T038 [P1] Update frontend to connect to ChatKit server using React ChatKit in phase-03/frontend/src/components/chat/chat-interface.tsx
+- [X] T039 [P1] Test ChatKit integration with Neon DB persistence
+- [X] T040 [P1] Implement authentication for ChatKit endpoints in phase-03/backend/src/api/routes/chat_routes.py
+
+## Phase 7: Cross-cutting Features & Polish
 
 ### Goal
 Implement non-functional requirements and polish the user experience.
@@ -145,13 +165,13 @@ Implement non-functional requirements and polish the user experience.
 
 ### Tasks
 
-- [ ] T035 Implement rate limiting for chat endpoints (max 100 requests per user per hour) in phase-03/backend/src/api/routes/chat_routes.py
-- [ ] T036 Add timeout handling for AI API calls with 30-second default in phase-03/backend/src/agents/chat_agent.py
-- [ ] T037 Implement retry logic for failed AI API calls with exponential backoff in phase-03/backend/src/agents/chat_agent.py
-- [ ] T038 Handle authentication token expiration with re-authentication prompt in phase-03/frontend/src/features/chat/queries.ts
-- [ ] T039 Add proper error messages for user-friendly responses in phase-03/backend/src/api/routes/chat_routes.py
-- [ ] T040 Add HTTP 429 responses when rate limits are exceeded in phase-03/backend/src/api/routes/chat_routes.py
-- [ ] T041 Implement proper user isolation in phase-03/backend/src/services/chat_service.py
-- [ ] T042 Add conversation context preservation during token refresh in phase-03/backend/src/services/chat_service.py
-- [ ] T043 Update final README files with complete documentation
-- [ ] T044 Test complete end-to-end functionality
+- [X] T041 Implement rate limiting for chat endpoints (max 100 requests per user per hour) in phase-03/backend/src/api/routes/chat_routes.py
+- [X] T042 Add timeout handling for AI API calls with 30-second default in phase-03/backend/src/agents/chat_agent.py
+- [X] T043 Implement retry logic for failed AI API calls with exponential backoff in phase-03/backend/src/agents/chat_agent.py
+- [X] T044 Handle authentication token expiration with re-authentication prompt in phase-03/frontend/src/features/chat/queries.ts
+- [X] T045 Add proper error messages for user-friendly responses in phase-03/backend/src/api/routes/chat_routes.py
+- [X] T046 Add HTTP 429 responses when rate limits are exceeded in phase-03/backend/src/api/routes/chat_routes.py
+- [X] T047 Implement proper user isolation in phase-03/backend/src/services/chat_service.py
+- [X] T048 Add conversation context preservation during token refresh in phase-03/backend/src/services/chat_service.py
+- [X] T049 Update final README files with complete documentation
+- [X] T050 Test complete end-to-end functionality

@@ -1,3 +1,8 @@
+---
+name: specification-writing-skill
+description: This skill provides guidance for creating feature specifications in the Spec-Driven Development process.
+---
+
 # Specification Writing Skill
 
 ## Purpose

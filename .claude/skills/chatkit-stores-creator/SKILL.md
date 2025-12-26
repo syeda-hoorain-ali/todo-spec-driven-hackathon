@@ -3,7 +3,7 @@ name: chatkit-store-creator
 description: This skill helps create ChatKit store implementations with database integration, following best practices and avoiding common errors we've solved in previous implementations.
 ---
 
-# ChatKit Stores Creator
+# ChatKit Store Creator
 
 This skill helps create ChatKit store implementations with database integration, following best practices and avoiding common errors we've solved in previous implementations.
 
@@ -19,7 +19,7 @@ When a user needs to create a ChatKit store with database integration, use this 
 
 ## Common Errors to Avoid (Based on Previous Solutions)
 
-1. **Abstract Method Implementation Error**: "Cannot instantiate abstract class 'Stores' - Abstract methods not implemented"
+1. **Abstract Method Implementation Error**: "Cannot instantiate abstract class 'Store' - Abstract methods not implemented"
    - Solution: Implement ALL required abstract methods from the Store interface
 
 2. **Configuration Access Error**: "AttributeError: 'Config' object has no attribute 'NEON_DATABASE_URL'"
@@ -37,6 +37,36 @@ When a user needs to create a ChatKit store with database integration, use this 
 6. **ThreadMetadata Error**: "No parameter named 'updated_at'"
    - Solution: Use metadata field instead: metadata={"updated_at": value}
 
+7. **Type Annotation Error**: "Type of parameter 'context' is partially unknown" or "Parameter type is 'dict[Unknown, Unknown]'"
+   - Solution: Use proper type annotations like `Dict[str, Any]` for the Store generic and context parameters instead of just `dict`
+
+8. **UUID Generation Inconsistency**: Inconsistent ID generation patterns between `generate_thread_id` and `generate_item_id` methods
+   - Solution: Use consistent UUID generation with `str(uuid.uuid4())` for both methods
+
+9. **Append Method Type Error**: "Type of 'append' is partially unknown" or "Type of 'append' is '(object: Unknown, /) -> None'"
+   - Solution: Always use proper type annotations for lists before using the append method, e.g., `items: List[ThreadItem] = []` or `thread_metadata_list: List[ThreadMetadata] = []`
+
+10. **ThreadItem Content Access Error**: Issues when accessing content from ThreadItem without checking item type first
+   - Solution: Use the type property to check item type before accessing content: `if (item.type == "user_message" or item.type == "assistant_message") and item.content:`
+
+11. **Missing Abstract Method Error**: "Cannot instantiate abstract class 'Store' - Abstract method delete_thread_item not implemented"
+   - Solution: Always implement ALL abstract methods from the Store interface, including `delete_thread_item(self, thread_id: str, item_id: str, context: TContext) -> None`
+
+12. **Type Mismatch in Constructor Error**: Issues with required parameters like "thread_id", "inference_options", etc.
+   - Solution: Ensure all required parameters are provided to constructors; for UserMessageItem and AssistantMessageItem, provide: thread_id, content (list of appropriate content types), created_at, and inference_options (InferenceOptions())
+
+13. **Content Type Mismatch Error**: Using wrong content type literals like "text" instead of "input_text"/"output_text"
+   - Solution: Use correct type literals: UserMessageTextContent(type="input_text", ...) and AssistantMessageContent(type="output_text", ...)
+
+14. **Import Organization Error**: Local imports causing issues
+   - Solution: Move all imports to the top level of the file, including datetime, uuid, and SQLModel functions like asc, desc
+
+15. **SQLModel Order By Error**: Issues with order_by syntax
+   - Solution: Use proper SQLModel syntax: `.order_by(asc(ColumnName))` and `.order_by(desc(ColumnName))` instead of `.order_by(ColumnName.asc())`
+
+16. **Pre-Completion Error Checking**: Always verify your implementation before declaring it complete
+   - Solution: Before marking the implementation as done, check for: missing abstract methods, type mismatches, incorrect content types, import issues, and proper SQL syntax
+
 ## Template Structure
 
 ### Complete Store Implementation Template:
@@ -52,7 +82,7 @@ from src.config import settings  # Import the settings instance, not the Config 
 # Set up logging
 logger = logging.getLogger(__name__)
 
-class YourStoreName(Store[dict]):
+class YourStoreName(Store[TContext]):
     """Store implementation using PostgreSQL database for message and attachment persistence."""
 
     def __init__(self):
@@ -72,50 +102,44 @@ class YourStoreName(Store[dict]):
 
 
     # Implement ALL abstract methods from Store class
-    async def load_thread(self, thread_id: str, context: dict) -> ThreadMetadata:
+    async def load_thread(self, thread_id: str, context: TContext) -> ThreadMetadata:
         """Load a thread by its ID."""
 
-    async def save_thread(self, thread: ThreadMetadata, context: dict) -> None:
+    async def save_thread(self, thread: ThreadMetadata, context: TContext) -> None:
         """Save a thread."""
 
-    async def load_thread_items(self, thread_id: str, after: str | None, limit: int, order: str, context: dict) -> Page[ThreadItem]:
+    async def load_thread_items(self, thread_id: str, after: str | None, limit: int, order: str, context: TContext) -> Page[ThreadItem]:
         """Load items for a specific thread."""
 
 
-    async def save_attachment(self, attachment: Attachment, context: dict) -> None:
+    async def save_attachment(self, attachment: Attachment, context: TContext) -> None:
         """Save an attachment."""
-        # For now, we'll just log this since we're not implementing file storage
-        logger.info(f"Saving attachment: {attachment.id}")
 
-    async def load_attachment(self, attachment_id: str, context: dict) -> Attachment:
+    async def load_attachment(self, attachment_id: str, context: TContext) -> Attachment:
         """Load an attachment by ID."""
-        # For now, we'll return a placeholder since we're not implementing file storage
-        logger.info(f"Loading attachment: {attachment_id}")
-        raise ValueError(f"Attachment {attachment_id} not found")
 
-    async def delete_attachment(self, attachment_id: str, context: dict) -> None:
+    async def delete_attachment(self, attachment_id: str, context: TContext) -> None:
         """Delete an attachment by ID."""
-        logger.info(f"Deleting attachment: {attachment_id}")
 
-    async def load_threads(self, limit: int, after: str | None, order: str, context: dict) -> Page[ThreadMetadata]:
+    async def load_threads(self, limit: int, after: str | None, order: str, context: TContext) -> Page[ThreadMetadata]:
         """Load multiple threads."""
 
-    async def add_thread_item(self, thread_id: str, item: ThreadItem, context: dict) -> None:
+    async def add_thread_item(self, thread_id: str, item: ThreadItem, context: TContext) -> None:
         """Add an item to a thread."""
 
-    async def save_item(self, thread_id: str, item: ThreadItem, context: dict) -> None:
+    async def save_item(self, thread_id: str, item: ThreadItem, context: TContext) -> None:
         """Save an item to a thread (alternative to add_thread_item)."""
 
-    async def load_item(self, thread_id: str, item_id: str, context: dict) -> ThreadItem:
+    async def load_item(self, thread_id: str, item_id: str, context: TContext) -> ThreadItem:
         """Load a specific item from a thread."""
 
-    def generate_thread_id(self, context: dict) -> str:
+    def generate_thread_id(self, context: TContext) -> str:
         """Generate a new thread ID."""
 
-    def generate_item_id(self, item_type: StoreItemType, thread: ThreadMetadata, context: dict) -> str:
+    def generate_item_id(self, item_type: StoreItemType, thread: ThreadMetadata, context: TContext) -> str:
         """Generate a new item ID."""
 
-    async def delete_thread(self, thread_id: str, context: dict) -> None:
+    async def delete_thread(self, thread_id: str, context: TContext) -> None:
         """Delete a thread by its ID."""
 
     # Helper methods for compatibility with original implementation
@@ -175,11 +199,11 @@ class YourStoreName(Store[dict]):
 
 ## Common Store Categories
 
-- PostgreSQL stores (using asyncpg)
-- MySQL stores (using aiomysql)
-- SQLite stores (using aiosqlite)
-- MongoDB stores (using motor)
-- In-memory stores (for testing)
+- PostgreSQL store (using asyncpg)
+- MySQL store (using aiomysql)
+- SQLite store (using aiosqlite)
+- MongoDB store (using motor)
+- In-memory store (for testing)
 
 ## Output Requirements
 

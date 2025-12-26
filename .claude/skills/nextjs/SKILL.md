@@ -1,3 +1,8 @@
+---
+name: nextjs-project-initialization-and-best-practices
+description: This skill provides guidance for initializing and structuring Next.js projects with modern best practices. It covers project setup, component organization, API integration, and development patterns following the specified architecture.
+---
+
 # Next.js Project Initialization and Best Practices
 
 ## Overview
