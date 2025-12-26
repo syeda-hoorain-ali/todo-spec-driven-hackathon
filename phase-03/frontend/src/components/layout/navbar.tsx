@@ -35,7 +35,7 @@ export function Navbar() {
             <nav className="hidden md:flex items-center gap-1">
               <Link href="/dashboard">
                 <Button
-                  variant={isActive("/") ? "secondary" : "ghost"}
+                  variant={isActive("/dashboard") ? "secondary" : "ghost"}
                   size="sm"
                   className="gap-2"
                 >
