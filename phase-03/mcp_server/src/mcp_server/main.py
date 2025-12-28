@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 import logging
 from sqlmodel import select
+from fastapi import FastAPI
 
 from .database import get_session, init_db
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
@@ -157,7 +158,8 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
         logger.error(f"Error in update_task: {str(e)}")
         raise
 
-app = mcp
+app = FastAPI(name="todo-mcp-server")
+app.mount("/mcp", mcp.streamable_http_app())
 
 if __name__ == "__main__":
     import sys
