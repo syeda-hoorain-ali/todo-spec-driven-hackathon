@@ -13,14 +13,19 @@
       "Bash(xargs -I {} sh -c 'find . -path \"\"./phase-01/*\"\" -type f -newer {} 2>/dev/null || echo \"\"Checking phase-01 files\"\"')",
       "Bash(git fetch --all --prune)",
       "Bash(npm run test:run)",
-      "Bash(npm run build)"
+      "Bash(npm run build)",
+      "mcp__context7__get-library-docs"
     ],
     "deny": [],
     "ask": []
   },
+  "enabledMcpjsonServers": [
+    "context7-http"
+  ],
   "disabledMcpjsonServers": [
     "context7",
     "vercel",
     "playwright"
-  ]
+  ],
+  "enableAllProjectMcpServers": true
 }
