@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize the MCP server
-mcp = FastMCP(name="todo-mcp-server", json_response=True)
+mcp = FastMCP(name="todo-mcp-server", json_response=True, streamable_http_path="/")
 
 # Define response models for the tools
 class AddTaskResponse(BaseModel):
@@ -159,6 +159,7 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
         raise
 
 app = FastAPI(name="todo-mcp-server")
+mcp.run(transport="streamable-http")
 app.mount("/mcp", mcp.streamable_http_app())
 
 if __name__ == "__main__":
