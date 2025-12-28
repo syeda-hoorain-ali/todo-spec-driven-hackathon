@@ -159,23 +159,24 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
         raise
 
 app = FastAPI(name="todo-mcp-server")
+init_db()
 mcp.run(transport="streamable-http")
 app.mount("/mcp", mcp.streamable_http_app())
 
-if __name__ == "__main__":
-    import sys
+# if __name__ == "__main__":
+#     import sys
 
-    # Initialize the database
-    init_db()
+#     # Initialize the database
+#     init_db()
 
-    # Run the server
-    if len(sys.argv) > 1 and "--stdio" in sys.argv:
-        # Run as MCP server via stdio
-        mcp.run(transport="stdio")
-    else:
-        # For development, just run the server in the foreground
-        mcp.run(transport="streamable-http")
+#     # Run the server
+#     if len(sys.argv) > 1 and "--stdio" in sys.argv:
+#         # Run as MCP server via stdio
+#         mcp.run(transport="stdio")
+#     else:
+#         # For development, just run the server in the foreground
+#         mcp.run(transport="streamable-http")
 
-        print("Starting MCP server...")
-        print("Use --stdio argument to run as MCP server via stdio")
+#         print("Starting MCP server...")
+#         print("Use --stdio argument to run as MCP server via stdio")
         
