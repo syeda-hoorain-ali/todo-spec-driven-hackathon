@@ -1,7 +1,6 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime, UTC
-import uuid
 
 
 class TaskBase(SQLModel):

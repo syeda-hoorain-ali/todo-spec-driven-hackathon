@@ -1,11 +1,9 @@
 from typing import List, Optional
 from sqlmodel import Session, select
 from .models import Task, AddTaskRequest, UpdateTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest
-from .database import get_session
-from .auth import get_current_user, TokenData
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from datetime import datetime, timedelta, UTC
-import re
+import calendar
 
 
 def get_user_tasks(session: Session, user_id: str) -> List[Task]:
@@ -21,7 +19,7 @@ def get_user_tasks(session: Session, user_id: str) -> List[Task]:
     """
     statement = select(Task).where(Task.user_id == user_id)
     results = session.exec(statement)
-    return results.all()
+    return list(results.all())
 
 
 def create_task(session: Session, task_data: AddTaskRequest) -> Task:
@@ -188,29 +186,14 @@ def list_tasks_filtered(session: Session, list_request: ListTasksRequest) -> Lis
 
     # Apply sorting
     if list_request.sort_by:
-        if list_request.sort_by == "due_date":
-            if list_request.sort_order == "desc":
-                statement = statement.order_by(Task.due_date.desc())
-            else:
-                statement = statement.order_by(Task.due_date.asc())
-        elif list_request.sort_by == "priority":
-            if list_request.sort_order == "desc":
-                statement = statement.order_by(Task.priority.desc())
-            else:
-                statement = statement.order_by(Task.priority.asc())
-        elif list_request.sort_by == "title":
-            if list_request.sort_order == "desc":
-                statement = statement.order_by(Task.title.desc())
-            else:
-                statement = statement.order_by(Task.title.asc())
-        elif list_request.sort_by == "created_at":
-            if list_request.sort_order == "desc":
-                statement = statement.order_by(Task.created_at.desc())
-            else:
-                statement = statement.order_by(Task.created_at.asc())
+        sort_attribute = getattr(Task, list_request.sort_by)
+        if list_request.sort_order == "desc":
+            statement = statement.order_by(sort_attribute.desc())
+        else:
+            statement = statement.order_by(sort_attribute.asc())
 
     results = session.exec(statement)
-    return results.all()
+    return list(results.all())
 
 
 def process_recurrence_for_task(session: Session, task: Task) -> Optional[Task]:
@@ -252,8 +235,7 @@ def process_recurrence_for_task(session: Session, task: Task) -> Optional[Task]:
     base_date = task.due_date or task.created_at
     if base_date.tzinfo is None:
         # If the base date is naive, assume it's in UTC
-        import datetime as dt
-        base_date = base_date.replace(tzinfo=dt.timezone.utc)
+        base_date = base_date.replace(tzinfo=UTC)
 
     next_due_date = calculate_next_occurrence(
         base_date,
@@ -306,7 +288,6 @@ def calculate_next_occurrence(current_date: datetime, pattern: str, interval: in
         # For monthly recurrence, we need to handle month boundaries carefully
         # This implementation adds the interval in months by calculating days
         # A more sophisticated approach would handle day overflow (e.g., Jan 31 + 1 month)
-        import calendar
         current_year = current_date.year
         current_month = current_date.month
         target_month = current_month + interval

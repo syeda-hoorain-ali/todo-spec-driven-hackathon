@@ -2,11 +2,11 @@ from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel
 from typing import List, Dict, Any
 import logging
+from sqlmodel import select
 
 from .database import get_session, init_db
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
 from .tools import create_task, list_tasks_filtered, complete_task_in_db, delete_task_from_db, update_task_in_db
-from .auth import verify_token
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -77,29 +77,7 @@ async def list_tasks(request: ListTasksRequest) -> ListTasksResponse:
             tasks = list_tasks_filtered(session, request)
 
             # Convert tasks to dictionaries
-            task_dicts = []
-            for task in tasks:
-                task_dict = {
-                    "id": task.id,
-                    "user_id": task.user_id,
-                    "title": task.title,
-                    "description": task.description,
-                    "completed": task.completed,
-                    "category": task.category,
-                    "priority": task.priority,
-                    "due_date": task.due_date.isoformat() if task.due_date else None,
-                    "reminder_time": task.reminder_time.isoformat() if task.reminder_time else None,
-                    "is_recurring": task.is_recurring,
-                    "recurrence_pattern": task.recurrence_pattern,
-                    "recurrence_interval": task.recurrence_interval,
-                    "next_occurrence": task.next_occurrence.isoformat() if task.next_occurrence else None,
-                    "recurrence_end_date": task.recurrence_end_date.isoformat() if task.recurrence_end_date else None,
-                    "max_occurrences": task.max_occurrences,
-                    "created_at": task.created_at.isoformat(),
-                    "updated_at": task.updated_at.isoformat()
-                }
-                task_dicts.append(task_dict)
-
+            task_dicts = [task.model_dump(mode='json') for task in tasks]
             return ListTasksResponse(tasks=task_dicts)
     except Exception as e:
         logger.error(f"Error in list_tasks: {str(e)}")
@@ -137,7 +115,6 @@ async def delete_task(request: DeleteTaskRequest) -> DeleteTaskResponse:
         # Get database session
         with next(get_session()) as session:
             # First get the task to return its details in the response
-            from sqlmodel import select
             statement = select(Task).where(Task.id == request.task_id, Task.user_id == request.user_id)
             task = session.exec(statement).first()
 

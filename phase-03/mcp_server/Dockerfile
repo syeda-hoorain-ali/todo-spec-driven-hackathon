@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy project files
-COPY pyproject.toml poetry.lock* ./
+COPY pyproject.toml uv.lock* ./
 COPY . .
 
 # Install uv package manager
@@ -21,4 +21,4 @@ RUN uv sync --frozen
 EXPOSE 8000
 
 # Run the application
-CMD ["uv", "run", "python", "-m", "src.mcp_server.main"]
+CMD ["uv", "run", "-m", "--with", "mcp", "src.mcp_server.main"]
