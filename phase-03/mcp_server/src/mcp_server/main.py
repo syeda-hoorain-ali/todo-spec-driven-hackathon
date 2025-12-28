@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 import logging
 from sqlmodel import select
+from contextlib import asynccontextmanager
 
 from .database import get_session, init_db
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
@@ -13,7 +14,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize the MCP server
-mcp = FastMCP(name="todo-mcp-server", json_response=True, streamable_http_path="/")
+mcp = FastMCP(
+    name="todo-mcp-server",
+    json_response=True,
+    stateless_http=True,
+    streamable_http_path="/"
+)
 
 # Define response models for the tools
 class AddTaskResponse(BaseModel):
@@ -157,6 +163,18 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
         logger.error(f"Error in update_task: {str(e)}")
         raise
 
+# Create the ASGI app for Vercel
+# CRITICAL: You need the lifespan context manager
+@asynccontextmanager
+async def lifespan(app):
+    init_db()
+    async with mcp.session_manager.run():
+        yield
+
+
+# Export the ASGI app
+app = mcp.streamable_http_app()
+app.router.lifespan_context = lifespan
 
 if __name__ == "__main__":
     import sys
