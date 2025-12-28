@@ -4,6 +4,7 @@ from typing import List, Dict, Any
 import logging
 from sqlmodel import select
 from contextlib import asynccontextmanager
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .database import get_session, init_db
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
@@ -175,6 +176,11 @@ async def lifespan(app):
 # Export the ASGI app
 app = mcp.streamable_http_app()
 app.router.lifespan_context = lifespan
+# Explicitly allow Vercel hosts
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"]
+)
 
 if __name__ == "__main__":
     import sys
