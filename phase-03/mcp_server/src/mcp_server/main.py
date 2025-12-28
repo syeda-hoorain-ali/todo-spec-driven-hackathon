@@ -162,7 +162,7 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    mcp.run(transport="streamable-http")
+    # mcp.run(transport="streamable-http")
     yield
     
 
