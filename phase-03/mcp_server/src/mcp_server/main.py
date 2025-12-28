@@ -179,7 +179,12 @@ app.router.lifespan_context = lifespan
 # Explicitly allow Vercel hosts
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["*"]
+    allowed_hosts=[
+        "*.vercel.app",
+        "taskflow-phase-03-mcp-server.vercel.app",
+        "localhost",
+        "127.0.0.1"
+    ]
 )
 
 if __name__ == "__main__":
