@@ -1,0 +1,352 @@
+# MCP Task Tools API Contract
+
+openapi: 3.0.0
+info:
+  title: Task Management MCP Tools
+  description: API contract for MCP tools that enable AI agents to manage tasks
+  version: 1.0.0
+
+components:
+  schemas:
+    AddTaskRequest:
+      type: object
+      required:
+        - user_id
+        - title
+      properties:
+        user_id:
+          type: string
+          description: ID of the user creating the task
+        title:
+          type: string
+          description: Title of the task
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          description: Description of the task
+          maxLength: 1000
+        completed:
+          type: boolean
+          description: Whether the task is completed
+          default: false
+        category:
+          type: string
+          description: Category for the task
+          maxLength: 50
+          default: "other"
+        priority:
+          type: string
+          description: Priority level of the task
+          maxLength: 20
+          default: "medium"
+        due_date:
+          type: string
+          format: date-time
+          description: Due date for the task
+        reminder_time:
+          type: string
+          format: date-time
+          description: Reminder time for the task
+        is_recurring:
+          type: boolean
+          description: Whether the task is recurring
+          default: false
+        recurrence_pattern:
+          type: string
+          description: Recurrence pattern for the task
+          maxLength: 50
+        recurrence_interval:
+          type: integer
+          description: How often to repeat (e.g., every 2 weeks)
+        next_occurrence:
+          type: string
+          format: date-time
+          description: When the next occurrence is due
+        recurrence_end_date:
+          type: string
+          format: date-time
+          description: When recurrence ends
+        max_occurrences:
+          type: integer
+          description: Max number of occurrences
+
+    AddTaskResponse:
+      type: object
+      properties:
+        task_id:
+          type: integer
+          description: Unique identifier for the created task
+        status:
+          type: string
+          enum: [created]
+          description: Status of the operation
+        title:
+          type: string
+          description: Title of the created task
+
+    ListTasksRequest:
+      type: object
+      required:
+        - user_id
+      properties:
+        user_id:
+          type: string
+          description: ID of the user whose tasks to retrieve
+        status:
+          type: string
+          enum: [all, pending, completed]
+          description: Filter by completion status
+        priority:
+          type: string
+          enum: [low, medium, high]
+          description: Filter by priority level
+        category:
+          type: string
+          description: Filter by category
+        search:
+          type: string
+          description: Search keyword for title/description
+        sort_by:
+          type: string
+          enum: [due_date, priority, title, created_at]
+          description: Sort field
+        sort_order:
+          type: string
+          enum: [asc, desc]
+          description: Sort direction
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the task
+        user_id:
+          type: string
+          description: ID of the user who owns this task
+        title:
+          type: string
+          description: Title of the task
+        description:
+          type: string
+          description: Description of the task
+        completed:
+          type: boolean
+          description: Whether the task is completed
+        category:
+          type: string
+          description: Category for the task
+          maxLength: 50
+        priority:
+          type: string
+          description: Priority level of the task
+          maxLength: 20
+        due_date:
+          type: string
+          format: date-time
+          description: Due date for the task
+        reminder_time:
+          type: string
+          format: date-time
+          description: Reminder time for the task
+        is_recurring:
+          type: boolean
+          description: Whether the task is recurring
+        recurrence_pattern:
+          type: string
+          description: Recurrence pattern for the task
+          maxLength: 50
+        recurrence_interval:
+          type: integer
+          description: How often to repeat (e.g., every 2 weeks)
+        next_occurrence:
+          type: string
+          format: date-time
+          description: When the next occurrence is due
+        recurrence_end_date:
+          type: string
+          format: date-time
+          description: When recurrence ends
+        max_occurrences:
+          type: integer
+          description: Max number of occurrences
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    ListTasksResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Task'
+
+    CompleteTaskRequest:
+      type: object
+      required:
+        - user_id
+        - task_id
+      properties:
+        user_id:
+          type: string
+          description: ID of the user whose task to complete
+        task_id:
+          type: integer
+          description: ID of the task to complete
+
+    CompleteTaskResponse:
+      type: object
+      properties:
+        task_id:
+          type: integer
+          description: ID of the completed task
+        status:
+          type: string
+          enum: [completed]
+          description: Status of the operation
+        title:
+          type: string
+          description: Title of the completed task
+
+    DeleteTaskRequest:
+      type: object
+      required:
+        - user_id
+        - task_id
+      properties:
+        user_id:
+          type: string
+          description: ID of the user whose task to delete
+        task_id:
+          type: integer
+          description: ID of the task to delete
+
+    DeleteTaskResponse:
+      type: object
+      properties:
+        task_id:
+          type: integer
+          description: ID of the deleted task
+        status:
+          type: string
+          enum: [deleted]
+          description: Status of the operation
+        title:
+          type: string
+          description: Title of the deleted task
+
+    UpdateTaskRequest:
+      type: object
+      required:
+        - user_id
+        - task_id
+      properties:
+        user_id:
+          type: string
+          description: ID of the user whose task to update
+        task_id:
+          type: integer
+          description: ID of the task to update
+        title:
+          type: string
+          description: New title for the task
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          description: New description for the task
+          maxLength: 1000
+        completed:
+          type: boolean
+          description: Whether the task is completed
+        category:
+          type: string
+          description: New category for the task
+          maxLength: 50
+        priority:
+          type: string
+          description: New priority level
+          maxLength: 20
+        due_date:
+          type: string
+          format: date-time
+          description: New due date for the task
+        reminder_time:
+          type: string
+          format: date-time
+          description: New reminder time for the task
+        is_recurring:
+          type: boolean
+          description: Whether the task is recurring
+        recurrence_pattern:
+          type: string
+          description: Recurrence pattern for the task
+          maxLength: 50
+        recurrence_interval:
+          type: integer
+          description: How often to repeat (e.g., every 2 weeks)
+        next_occurrence:
+          type: string
+          format: date-time
+          description: When the next occurrence is due
+        recurrence_end_date:
+          type: string
+          format: date-time
+          description: When recurrence ends
+        max_occurrences:
+          type: integer
+          description: Max number of occurrences
+
+    UpdateTaskResponse:
+      type: object
+      properties:
+        task_id:
+          type: integer
+          description: ID of the updated task
+        status:
+          type: string
+          enum: [updated]
+          description: Status of the operation
+        title:
+          type: string
+          description: Title of the updated task
+
+x-mcp-tools:
+  add_task:
+    description: Create a new task
+    inputSchema:
+      $ref: '#/components/schemas/AddTaskRequest'
+    outputSchema:
+      $ref: '#/components/schemas/AddTaskResponse'
+
+  list_tasks:
+    description: Retrieve tasks with filtering options
+    inputSchema:
+      $ref: '#/components/schemas/ListTasksRequest'
+    outputSchema:
+      $ref: '#/components/schemas/ListTasksResponse'
+
+  complete_task:
+    description: Mark a task as complete
+    inputSchema:
+      $ref: '#/components/schemas/CompleteTaskRequest'
+    outputSchema:
+      $ref: '#/components/schemas/CompleteTaskResponse'
+
+  delete_task:
+    description: Remove a task
+    inputSchema:
+      $ref: '#/components/schemas/DeleteTaskRequest'
+    outputSchema:
+      $ref: '#/components/schemas/DeleteTaskResponse'
+
+  update_task:
+    description: Modify task details
+    inputSchema:
+      $ref: '#/components/schemas/UpdateTaskRequest'
+    outputSchema:
+      $ref: '#/components/schemas/UpdateTaskResponse'
