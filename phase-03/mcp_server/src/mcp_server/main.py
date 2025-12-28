@@ -162,12 +162,13 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    mcp.run(transport="streamable-http")
+    # mcp.run(transport="streamable-http")
+    # anyio.run(mcp.run_streamable_http_async)
     yield
     
 
 app = FastAPI(name="todo-mcp-server", lifespan=lifespan)
-# app.mount("/mcp", mcp.streamable_http_app())
+app.mount("/mcp", mcp.streamable_http_app())
 
 if __name__ == "__main__":
     import sys
