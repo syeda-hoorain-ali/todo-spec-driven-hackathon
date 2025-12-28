@@ -157,6 +157,7 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
         logger.error(f"Error in update_task: {str(e)}")
         raise
 
+app = mcp
 
 if __name__ == "__main__":
     import sys
