@@ -3,8 +3,6 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 import logging
 from sqlmodel import select
-from fastapi import FastAPI
-from contextlib import asynccontextmanager
 
 from .database import get_session, init_db
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
@@ -159,16 +157,6 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
         logger.error(f"Error in update_task: {str(e)}")
         raise
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    init_db()
-    # mcp.run(transport="streamable-http")
-    # anyio.run(mcp.run_streamable_http_async)
-    yield
-    
-
-app = FastAPI(name="todo-mcp-server", lifespan=lifespan)
-app.mount("/mcp", mcp.streamable_http_app())
 
 if __name__ == "__main__":
     import sys
