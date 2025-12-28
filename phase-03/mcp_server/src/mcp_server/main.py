@@ -4,6 +4,7 @@ from typing import List, Dict, Any
 import logging
 from sqlmodel import select
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
 from .database import get_session, init_db
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
@@ -158,25 +159,30 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
         logger.error(f"Error in update_task: {str(e)}")
         raise
 
-app = FastAPI(name="todo-mcp-server")
-init_db()
-mcp.run(transport="streamable-http")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    mcp.run(transport="streamable-http")
+    yield
+    
+
+app = FastAPI(name="todo-mcp-server", lifespan=lifespan)
 app.mount("/mcp", mcp.streamable_http_app())
 
-# if __name__ == "__main__":
-#     import sys
+if __name__ == "__main__":
+    import sys
 
-#     # Initialize the database
-#     init_db()
+    # Initialize the database
+    init_db()
 
-#     # Run the server
-#     if len(sys.argv) > 1 and "--stdio" in sys.argv:
-#         # Run as MCP server via stdio
-#         mcp.run(transport="stdio")
-#     else:
-#         # For development, just run the server in the foreground
-#         mcp.run(transport="streamable-http")
+    # Run the server
+    if len(sys.argv) > 1 and "--stdio" in sys.argv:
+        # Run as MCP server via stdio
+        mcp.run(transport="stdio")
+    else:
+        # For development, just run the server in the foreground
+        mcp.run(transport="streamable-http")
 
-#         print("Starting MCP server...")
-#         print("Use --stdio argument to run as MCP server via stdio")
+        print("Starting MCP server...")
+        print("Use --stdio argument to run as MCP server via stdio")
         
