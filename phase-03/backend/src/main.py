@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
     finally:
         # Cleanup all MCP servers
         await mcp_server.cleanup()
-        print("MCP server cleanup")
+        logger.info("MCP server cleanup")
 
 
 app = FastAPI(title="Secured Todo API", version="1.0.0", lifespan=lifespan)
