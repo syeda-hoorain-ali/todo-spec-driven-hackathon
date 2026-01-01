@@ -3,26 +3,24 @@ ChatKit Server Implementation
 Provides ChatKit server functionality for conversation management with database integration and agent processing
 """
 import logging
-from typing import TypeVar, AsyncIterator, Generic, Dict, List, Any
+from typing import AsyncIterator
+from agents import Agent, Runner
 from chatkit.server import ChatKitServer as BaseChatKitServer
 from chatkit.store import Store
 from chatkit.types import AssistantMessageItem, ThreadMetadata, UserMessageItem, ThreadStreamEvent
 from chatkit.agents import AgentContext, stream_agent_response, ThreadItemConverter
-from agents import Agent, Runner
-from agents.mcp import MCPServer
+from ..todo_agents.context import UserContext
 
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
-TContext = TypeVar('TContext', bound=Dict[str, Any])
-
-class ChatKitServer(BaseChatKitServer, Generic[TContext]):
+class ChatKitServer(BaseChatKitServer):
     """
     Custom ChatKit server implementation extending the base ChatKitServer class.
     """
 
-    def __init__(self, agent: Agent[TContext], store: Store[TContext], mcp_servers: List[MCPServer] = []):
+    def __init__(self, agent: Agent[AgentContext[UserContext]], store: Store[UserContext]):
         """
         Initialize the custom ChatKit server with the provided agent and store.
 
@@ -33,15 +31,14 @@ class ChatKitServer(BaseChatKitServer, Generic[TContext]):
         # Initialize the base class with store
         super().__init__(store=store)
         self.agent = agent
-        self.mcp_servers = mcp_servers
         self.converter = ThreadItemConverter()
         logger.info("CustomChatKitServer initialized")
 
-    async def respond(self, thread: ThreadMetadata, input_user_message: UserMessageItem | None, context: TContext) -> AsyncIterator[ThreadStreamEvent]:
+    async def respond(self, thread: ThreadMetadata, input_user_message: UserMessageItem | None, context: UserContext) -> AsyncIterator[ThreadStreamEvent]:
         """
         Process a user message and generate an agent response with database persistence.
         """
-        agent_context = AgentContext(
+        agent_context = AgentContext[UserContext](
             thread=thread,
             store=self.store,
             request_context=context,
@@ -58,20 +55,16 @@ class ChatKitServer(BaseChatKitServer, Generic[TContext]):
         # Convert thread items to agent input format
         agent_input = await self.converter.to_agent_input(all_items) if all_items else []
 
+        # Run the agent with streaming
+        result = Runner.run_streamed(
+            self.agent,
+            agent_input,
+            context=agent_context,
+        )
+
+        # Track ID mappings to ensure unique IDs (LiteLLM/Gemini may reuse IDs)
+        id_mapping: dict[str, str] = {}
         try:
-            # Connect all MCP servers
-            for server in self.mcp_servers:
-                await server.connect()
-            # Run the agent with streaming
-            result = Runner.run_streamed(
-                self.agent,
-                agent_input,
-                context=agent_context,
-            )
-
-            # Track ID mappings to ensure unique IDs (LiteLLM/Gemini may reuse IDs)
-            id_mapping: dict[str, str] = {}
-
             async for event in stream_agent_response(agent_context, result):
                 # Handle ID mapping for uniqueness
                 if event.type == "thread.item.added":
@@ -92,8 +85,5 @@ class ChatKitServer(BaseChatKitServer, Generic[TContext]):
                         event.item_id = id_mapping[event.item_id]
 
                 yield event
-
-        finally:
-            # Cleanup all MCP servers
-            for server in self.mcp_servers:
-                await server.cleanup()
+        except Exception as e:
+            logger.error("Error", e)

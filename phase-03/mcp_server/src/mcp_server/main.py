@@ -6,7 +6,7 @@ from sqlmodel import select
 from contextlib import asynccontextmanager
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from .database import get_session, init_db
+from .database import get_session_with_user
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
 from .tools import create_task, list_tasks_filtered, complete_task_in_db, delete_task_from_db, update_task_in_db
 
@@ -19,7 +19,8 @@ mcp = FastMCP(
     name="todo-mcp-server",
     json_response=True,
     stateless_http=True,
-    streamable_http_path="/"
+    streamable_http_path="/",
+    port=8001,
 )
 
 # Define response models for the tools
@@ -59,7 +60,7 @@ async def add_task(request: AddTaskRequest) -> AddTaskResponse:
     """
     try:
         # Get database session
-        with next(get_session()) as session:
+        with next(get_session_with_user(user_id=request.user_id)) as session:
             created_task = create_task(session, request)
 
             return AddTaskResponse(
@@ -80,7 +81,7 @@ async def list_tasks(request: ListTasksRequest) -> ListTasksResponse:
     """
     try:
         # Get database session
-        with next(get_session()) as session:
+        with next(get_session_with_user(user_id=request.user_id)) as session:
             tasks = list_tasks_filtered(session, request)
 
             # Convert tasks to dictionaries
@@ -99,7 +100,7 @@ async def complete_task(request: CompleteTaskRequest) -> CompleteTaskResponse:
     """
     try:
         # Get database session
-        with next(get_session()) as session:
+        with next(get_session_with_user(user_id=request.user_id)) as session:
             completed_task = complete_task_in_db(session, request.task_id, request.user_id)
 
             return CompleteTaskResponse(
@@ -120,7 +121,7 @@ async def delete_task(request: DeleteTaskRequest) -> DeleteTaskResponse:
     """
     try:
         # Get database session
-        with next(get_session()) as session:
+        with next(get_session_with_user(user_id=request.user_id)) as session:
             # First get the task to return its details in the response
             statement = select(Task).where(Task.id == request.task_id, Task.user_id == request.user_id)
             task = session.exec(statement).first()
@@ -152,7 +153,7 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
     """
     try:
         # Get database session
-        with next(get_session()) as session:
+        with next(get_session_with_user(user_id=request.user_id)) as session:
             updated_task = update_task_in_db(session, request.task_id, request.user_id, request)
 
             return UpdateTaskResponse(
@@ -168,7 +169,7 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
 # CRITICAL: You need the lifespan context manager
 @asynccontextmanager
 async def lifespan(app):
-    init_db()
+    # init_db()
     async with mcp.session_manager.run():
         yield
 
@@ -189,9 +190,6 @@ app.add_middleware(
 
 if __name__ == "__main__":
     import sys
-
-    # Initialize the database
-    init_db()
 
     # Run the server
     if len(sys.argv) > 1 and "--stdio" in sys.argv:

@@ -27,6 +27,8 @@ class Task(TaskBase, table=True):
     """
     Task model representing a user's todo item with comprehensive attributes for task management.
     """
+    __tablename__ = "tasks"  # Use the same table as the backend with RLS policies
+
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC), sa_column_kwargs={"onupdate": lambda: datetime.now(UTC)})
@@ -44,6 +46,8 @@ class UpdateTaskRequest(SQLModel):
     Request model for updating a task.
     All fields are optional to allow partial updates.
     """
+    user_id: str = Field(min_length=1, max_length=255)
+    task_id: int
     title: Optional[str] = Field(default=None, min_length=1, max_length=255)
     description: Optional[str] = Field(default=None, max_length=1000)
     completed: Optional[bool] = Field(default=None)

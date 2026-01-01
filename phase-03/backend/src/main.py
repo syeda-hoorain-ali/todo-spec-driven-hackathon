@@ -1,32 +1,39 @@
+import sys
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-# Handle both direct execution and module import
-try:
-    from .api.routes.tasks import router as tasks_router
-    from .api.routes.chat import router as chat_router
-    from .utils.logging import logger
-    from .utils.exceptions import (
-        TaskNotFoundException, UnauthorizedAccessException,
-        InvalidRecurrencePatternException, InvalidReminderTimeException,
-        ValidationError, task_not_found_handler, unauthorized_access_handler,
-        invalid_recurrence_pattern_handler, invalid_reminder_time_handler,
-        validation_error_handler, general_exception_handler
-    )
-except ImportError:
-    # When running tests, use absolute import
-    from src.api.routes.tasks import router as tasks_router
-    from src.api.routes.chat import router as chat_router
-    from src.utils.logging import logger
-    from src.utils.exceptions import (
-        TaskNotFoundException, UnauthorizedAccessException,
-        InvalidRecurrencePatternException, InvalidReminderTimeException,
-        ValidationError, task_not_found_handler, unauthorized_access_handler,
-        invalid_recurrence_pattern_handler, invalid_reminder_time_handler,
-        validation_error_handler, general_exception_handler
-    )
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-app = FastAPI(title="Secured Todo API", version="1.0.0")
+from src.api.routes.tasks import router as tasks_router
+from src.api.routes.chat import router as chat_router
+from src.todo_agents.chat_agent import create_todo_chat_agent
+from src.utils.logging import logger
+from src.utils.exceptions import (
+    TaskNotFoundException, UnauthorizedAccessException,
+    InvalidRecurrencePatternException, InvalidReminderTimeException,
+    ValidationError, task_not_found_handler, unauthorized_access_handler,
+    invalid_recurrence_pattern_handler, invalid_reminder_time_handler,
+    validation_error_handler, general_exception_handler
+)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    agent, mcp_server = create_todo_chat_agent()
+    try:
+        await mcp_server.connect()
+        logger.info("MCP server connected")
+        yield
+
+    finally:
+        # Cleanup all MCP servers
+        await mcp_server.cleanup()
+        logger.info("MCP server cleanup")
+
+
+app = FastAPI(title="Secured Todo API", version="1.0.0", lifespan=lifespan)
 
 # Log application startup
 logger.info("Secured Todo API starting up...")

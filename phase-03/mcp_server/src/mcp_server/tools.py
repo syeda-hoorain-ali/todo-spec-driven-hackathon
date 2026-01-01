@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlmodel import Session, select
+from sqlmodel import Session, select, text
 from .models import Task, AddTaskRequest, UpdateTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest
 from fastapi import HTTPException, status
 from datetime import datetime, timedelta, UTC
@@ -306,3 +306,4 @@ def calculate_next_occurrence(current_date: datetime, pattern: str, interval: in
     else:
         # For unknown patterns, default to daily
         return current_date + timedelta(days=interval)
+    

@@ -1,4 +1,4 @@
-from sqlmodel import create_engine, Session
+from sqlmodel import create_engine, Session, text
 from typing import Generator
 from .config import settings
 
@@ -20,13 +20,17 @@ def get_session() -> Generator[Session, None, None]:
         yield session
 
 
-def init_db():
+def get_session_with_user(user_id: str) -> Generator[Session, None, None]:
     """
-    Initialize the database by creating all tables.
-    This should be called when starting the application.
-    """
-    from .models import Task  # Import here to avoid circular imports
+    Get a database session with RLS user context set.
 
-    # Create all tables defined in the models
-    from sqlmodel import SQLModel
-    SQLModel.metadata.create_all(engine)
+    Args:
+        user_id: The user ID to set for RLS policies
+
+    Yields:
+        Configured database session with RLS context
+    """
+    with Session(engine) as session:
+        # Set the session variable for RLS policies
+        session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
+        yield session

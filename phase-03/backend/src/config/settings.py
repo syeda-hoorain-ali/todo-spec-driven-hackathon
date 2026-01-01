@@ -11,11 +11,12 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # Database settings
-    # Neon MCP server settings
+    # Neon Database settings
     neon_database_url: str
-    neon_mcp_server_url: str = "https://mcp.neon.tech/mcp"
     neon_api_key: str
+
+    # MCP server settings
+    mcp_server_url: str = "http://localhost:8001"
 
     # Better Auth settings
     better_auth_secret: str

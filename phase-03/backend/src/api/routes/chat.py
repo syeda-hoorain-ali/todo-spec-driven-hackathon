@@ -1,28 +1,23 @@
-from typing import Dict, Any
+import sys
+import os
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import Response, StreamingResponse
 from chatkit.server import StreamingResult
-# Handle both direct execution and module import
-try:
-    from ...auth.middleware import JWTBearer
-    from ...utils.validation import validate_user_id
-    from ...auth.jwt import get_user_id_from_token
-    from ...services.chatkit_server import ChatKitServer
-    from ...services.chatkit_store import ChatKitNeonStore
-    from ...todo_agents.chat_agent import create_todo_chat_agent
-except ImportError:
-    # When running tests or as module, use absolute imports
-    from src.auth.middleware import JWTBearer
-    from src.utils.validation import validate_user_id
-    from src.auth.jwt import get_user_id_from_token
-    from src.services.chatkit_server import ChatKitServer
-    from src.services.chatkit_store import ChatKitNeonStore
-    from src.todo_agents.chat_agent import create_todo_chat_agent
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+
+from src.auth.middleware import JWTBearer
+from src.utils.validation import validate_user_id
+from src.auth.jwt import get_user_id_from_token
+from src.services.chatkit_server import ChatKitServer
+from src.services.chatkit_store import ChatKitNeonStore
+from src.todo_agents.chat_agent import create_todo_chat_agent
+from src.todo_agents.context import UserContext
 
 
-agent, neon_mcp_server = create_todo_chat_agent()
-chatkit_store = ChatKitNeonStore[Dict[str, Any]]()
-chatkit_server = ChatKitServer(agent=agent, store=chatkit_store, mcp_servers=[neon_mcp_server])
+agent, _ = create_todo_chat_agent()
+chatkit_store = ChatKitNeonStore()
+chatkit_server = ChatKitServer(agent=agent, store=chatkit_store)
 
 router = APIRouter(prefix="/api", tags=["chat"])
 security = JWTBearer()
@@ -51,10 +46,9 @@ async def chat(
 
     # Process the payload using the ChatKitServer instance
     # Pass the validated user_id in the context
-    context = {
-        "request": request,
-        "user_id": validated_user_id
-    }
+    context = UserContext(
+        user_id=validated_user_id
+    )
     result = await chatkit_server.process(payload, context)
 
     if isinstance(result, StreamingResult):
