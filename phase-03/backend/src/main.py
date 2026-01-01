@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
     agent, mcp_server = create_todo_chat_agent()
     try:
         await mcp_server.connect()
-        print("MCP server connected")
+        logger.info("MCP server connected")
         yield
 
     finally:
