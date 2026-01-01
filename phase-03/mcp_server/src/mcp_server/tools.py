@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlmodel import Session, select
+from sqlmodel import Session, select, text
 from .models import Task, AddTaskRequest, UpdateTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest
 from fastapi import HTTPException, status
 from datetime import datetime, timedelta, UTC
@@ -17,6 +17,9 @@ def get_user_tasks(session: Session, user_id: str) -> List[Task]:
     Returns:
         List of tasks belonging to the user
     """
+    # Set the session variable for RLS policies using SQLAlchemy's execute method
+    session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
+
     statement = select(Task).where(Task.user_id == user_id)
     results = session.exec(statement)
     return list(results.all())
@@ -33,6 +36,9 @@ def create_task(session: Session, task_data: AddTaskRequest) -> Task:
     Returns:
         Created Task object
     """
+    # Set the session variable for RLS policies
+    session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": task_data.user_id})
+
     # Validate that due_date is in the future if provided
     if task_data.due_date and task_data.due_date < datetime.now(UTC):
         raise HTTPException(
@@ -67,6 +73,9 @@ def update_task_in_db(session: Session, task_id: int, user_id: str, update_data:
     Returns:
         Updated Task object
     """
+    # Set the session variable for RLS policies
+    session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
+
     statement = select(Task).where(Task.id == task_id, Task.user_id == user_id)
     task = session.exec(statement).first()
 
@@ -103,6 +112,9 @@ def delete_task_from_db(session: Session, task_id: int, user_id: str) -> bool:
     Returns:
         True if task was deleted, False if not found
     """
+    # Set the session variable for RLS policies
+    session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
+
     statement = select(Task).where(Task.id == task_id, Task.user_id == user_id)
     task = session.exec(statement).first()
 
@@ -126,6 +138,9 @@ def complete_task_in_db(session: Session, task_id: int, user_id: str) -> Task:
     Returns:
         Updated Task object
     """
+    # Set the session variable for RLS policies
+    session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
+
     statement = select(Task).where(Task.id == task_id, Task.user_id == user_id)
     task = session.exec(statement).first()
 
@@ -160,6 +175,8 @@ def list_tasks_filtered(session: Session, list_request: ListTasksRequest) -> Lis
     Returns:
         List of tasks matching the filters
     """
+    # Set the session variable for RLS policies
+    session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": list_request.user_id})
     statement = select(Task).where(Task.user_id == list_request.user_id)
 
     # Apply status filter
@@ -207,6 +224,9 @@ def process_recurrence_for_task(session: Session, task: Task) -> Optional[Task]:
     Returns:
         New task instance if created, None if no recurrence or max occurrences reached
     """
+    # Set the session variable for RLS policies
+    session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": task.user_id})
+
     # Check if the task is recurring and was just completed
     if not task.is_recurring or not task.completed:
         return None
@@ -306,3 +326,4 @@ def calculate_next_occurrence(current_date: datetime, pattern: str, interval: in
     else:
         # For unknown patterns, default to daily
         return current_date + timedelta(days=interval)
+    

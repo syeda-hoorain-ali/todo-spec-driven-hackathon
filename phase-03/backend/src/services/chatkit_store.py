@@ -2,8 +2,7 @@
 ChatKit Stores Implementation
 Connects ChatKit to Neon DB for conversation persistence
 """
-from typing import List, Optional, Dict, Any, Generic
-from typing import TypeVar
+from typing import List, Optional
 from sqlmodel import Session, select, asc, desc
 from sqlalchemy import text
 from chatkit.store import Store
@@ -16,12 +15,12 @@ from chatkit.types import (
 from ..models.thread import Thread as Thread
 from ..models.thread_item import ThreadItem as ThreadItem
 from ..database.database import engine
+from ..todo_agents.context import UserContext
 import uuid
 
-TContext = TypeVar('TContext', bound=Dict[str, Any])
 
 
-class ChatKitNeonStore(Store[TContext], Generic[TContext]):
+class ChatKitNeonStore(Store[UserContext]):
     """
     ChatKit stores implementation that connects to Neon DB
     Provides conversation and message storage for ChatKit
@@ -30,15 +29,14 @@ class ChatKitNeonStore(Store[TContext], Generic[TContext]):
     def __init__(self):
         self.engine = engine
 
-    async def load_thread(self, thread_id: str, context: TContext) -> ThreadMetadata:
+    async def load_thread(self, thread_id: str, context: UserContext) -> ThreadMetadata:
         """Load a thread by its ID"""
         # Get user_id from context for RLS policies
-        user_id = context.get("user_id", "system")
+        user_id = context.user_id
 
         # Create a session and set the session variable for RLS
         with Session(self.engine) as session:
             # Execute raw SQL to set the session variable for RLS
-            from sqlalchemy import text
             session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
 
             thread = session.get(Thread, thread_id)
@@ -58,15 +56,14 @@ class ChatKitNeonStore(Store[TContext], Generic[TContext]):
                 }
             )
 
-    async def save_thread(self, thread: ThreadMetadata, context: TContext) -> None:
+    async def save_thread(self, thread: ThreadMetadata, context: UserContext) -> None:
         """Save a thread"""
         # Get user_id from context for RLS policies
-        user_id = context.get("user_id", "system")
+        user_id = context.user_id
 
         # Create a session and set the session variable for RLS
         with Session(self.engine) as session:
             # Execute raw SQL to set the session variable for RLS
-            from sqlalchemy import text
             session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
 
             # Check if thread already exists in the database
@@ -82,15 +79,14 @@ class ChatKitNeonStore(Store[TContext], Generic[TContext]):
                 session.add(thread_obj)
                 session.commit()
 
-    async def load_thread_items(self, thread_id: str, after: Optional[str], limit: int, order: str, context: TContext):
+    async def load_thread_items(self, thread_id: str, after: Optional[str], limit: int, order: str, context: UserContext):
         """Load thread items for a thread"""
         # Get user_id from context for RLS policies
-        user_id = context.get("user_id", "system")
+        user_id = context.user_id
 
         # Create a session and set the session variable for RLS
         with Session(self.engine) as session:
             # Execute raw SQL to set the session variable for RLS
-            from sqlalchemy import text
             session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
 
             # First verify that the thread belongs to the user
@@ -133,27 +129,26 @@ class ChatKitNeonStore(Store[TContext], Generic[TContext]):
 
             return Page(data=items, has_more=False)
 
-    async def save_attachment(self, attachment: Attachment, context: TContext) -> None:
+    async def save_attachment(self, attachment: Attachment, context: UserContext) -> None:
         """Save an attachment"""
         print(f"Saving attachment: {attachment.id}")
 
-    async def load_attachment(self, attachment_id: str, context: TContext) -> Attachment:
+    async def load_attachment(self, attachment_id: str, context: UserContext) -> Attachment:
         """Load an attachment by ID"""
         raise ValueError(f"Attachment {attachment_id} not found")
 
-    async def delete_attachment(self, attachment_id: str, context: TContext) -> None:
+    async def delete_attachment(self, attachment_id: str, context: UserContext) -> None:
         """Delete an attachment by ID"""
         print(f"Deleting attachment: {attachment_id}")
 
-    async def load_threads(self, limit: int, after: str | None, order: str, context: TContext) -> Page[ThreadMetadata]:
+    async def load_threads(self, limit: int, after: str | None, order: str, context: UserContext) -> Page[ThreadMetadata]:
         """Load multiple threads"""
         # Get user_id from context for RLS policies
-        user_id = context.get("user_id", "system")
+        user_id = context.user_id
 
         # Create a session and set the session variable for RLS
         with Session(self.engine) as session:
             # Execute raw SQL to set the session variable for RLS
-            from sqlalchemy import text
             session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
 
             # Load only threads that belong to the requesting user
@@ -180,15 +175,14 @@ class ChatKitNeonStore(Store[TContext], Generic[TContext]):
 
             return Page(data=thread_metadata_list, has_more=False)
 
-    async def add_thread_item(self, thread_id: str, item: ThreadItemType, context: TContext) -> None:
+    async def add_thread_item(self, thread_id: str, item: ThreadItemType, context: UserContext) -> None:
         """Add an item to a thread"""
         # Get user_id from context for RLS policies
-        user_id = context.get("user_id", "system")
+        user_id = context.user_id
 
         # Create a session and set the session variable for RLS
         with Session(self.engine) as session:
             # Execute raw SQL to set the session variable for RLS
-            from sqlalchemy import text
             session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
 
             # Verify that the thread belongs to the user
@@ -217,19 +211,18 @@ class ChatKitNeonStore(Store[TContext], Generic[TContext]):
             session.add(thread_item)
             session.commit()
 
-    async def save_item(self, thread_id: str, item: ThreadItemType, context: TContext) -> None:
+    async def save_item(self, thread_id: str, item: ThreadItemType, context: UserContext) -> None:
         """Save an item to a thread"""
         await self.add_thread_item(thread_id, item, context)
 
-    async def load_item(self, thread_id: str, item_id: str, context: TContext) -> ThreadItemType:
+    async def load_item(self, thread_id: str, item_id: str, context: UserContext) -> ThreadItemType:
         """Load a specific item from a thread"""
         # Get user_id from context for RLS policies
-        user_id = context.get("user_id", "system")
+        user_id = context.user_id
 
         # Create a session and set the session variable for RLS
         with Session(self.engine) as session:
             # Execute raw SQL to set the session variable for RLS
-            from sqlalchemy import text
             session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
 
             thread_item = session.get(ThreadItem, item_id)  # ThreadItem ID is now string
@@ -258,15 +251,14 @@ class ChatKitNeonStore(Store[TContext], Generic[TContext]):
                     created_at=thread_item.timestamp
                 )
 
-    async def delete_thread_item(self, thread_id: str, item_id: str, context: TContext) -> None:
+    async def delete_thread_item(self, thread_id: str, item_id: str, context: UserContext) -> None:
         """Delete a thread item by its ID"""
         # Get user_id from context for RLS policies
-        user_id = context.get("user_id", "system")
+        user_id = context.user_id
 
         # Create a session and set the session variable for RLS
         with Session(self.engine) as session:
             # Execute raw SQL to set the session variable for RLS
-            from sqlalchemy import text
             session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
 
             thread_item = session.get(ThreadItem, item_id)
@@ -282,15 +274,14 @@ class ChatKitNeonStore(Store[TContext], Generic[TContext]):
             session.delete(thread_item)
             session.commit()
 
-    async def delete_thread(self, thread_id: str, context: TContext) -> None:
+    async def delete_thread(self, thread_id: str, context: UserContext) -> None:
         """Delete a thread by its ID"""
         # Get user_id from context for RLS policies
-        user_id = context.get("user_id", "system")
+        user_id = context.user_id
 
         # Create a session and set the session variable for RLS
         with Session(self.engine) as session:
             # Execute raw SQL to set the session variable for RLS
-            from sqlalchemy import text
             session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
 
             thread = session.get(Thread, thread_id)

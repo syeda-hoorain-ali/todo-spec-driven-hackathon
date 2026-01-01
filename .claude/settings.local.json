@@ -22,10 +22,5 @@
   "enabledMcpjsonServers": [
     "context7-http"
   ],
-  "disabledMcpjsonServers": [
-    "context7",
-    "vercel",
-    "playwright"
-  ],
   "enableAllProjectMcpServers": true
 }

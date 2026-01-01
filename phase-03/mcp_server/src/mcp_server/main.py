@@ -6,7 +6,7 @@ from sqlmodel import select
 from contextlib import asynccontextmanager
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from .database import get_session, init_db
+from .database import get_session
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
 from .tools import create_task, list_tasks_filtered, complete_task_in_db, delete_task_from_db, update_task_in_db
 
@@ -19,7 +19,8 @@ mcp = FastMCP(
     name="todo-mcp-server",
     json_response=True,
     stateless_http=True,
-    streamable_http_path="/"
+    streamable_http_path="/",
+    port=8001,
 )
 
 # Define response models for the tools
@@ -168,7 +169,7 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
 # CRITICAL: You need the lifespan context manager
 @asynccontextmanager
 async def lifespan(app):
-    init_db()
+    # init_db()
     async with mcp.session_manager.run():
         yield
 
@@ -189,9 +190,6 @@ app.add_middleware(
 
 if __name__ == "__main__":
     import sys
-
-    # Initialize the database
-    init_db()
 
     # Run the server
     if len(sys.argv) > 1 and "--stdio" in sys.argv:

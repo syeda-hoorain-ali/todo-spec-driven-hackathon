@@ -20,13 +20,13 @@ def get_session() -> Generator[Session, None, None]:
         yield session
 
 
-def init_db():
-    """
-    Initialize the database by creating all tables.
-    This should be called when starting the application.
-    """
-    from .models import Task  # Import here to avoid circular imports
+# def init_db():
+#     """
+#     Initialize the database by creating all tables.
+#     This should be called when starting the application.
+#     """
+#     from .models import Task  # Import here to avoid circular imports
 
-    # Create all tables defined in the models
-    from sqlmodel import SQLModel
-    SQLModel.metadata.create_all(engine)
+#     # Create all tables defined in the models
+#     from sqlmodel import SQLModel
+#     SQLModel.metadata.create_all(engine)
