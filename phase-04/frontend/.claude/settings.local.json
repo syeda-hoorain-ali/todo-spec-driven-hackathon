@@ -1,0 +1,11 @@
+{
+  "enabledMcpjsonServers": [
+    "context7",
+    "vercel"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(git --version)"
+    ]
+  }
+}
