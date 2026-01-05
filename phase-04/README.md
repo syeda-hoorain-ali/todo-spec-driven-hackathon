@@ -1,69 +1,74 @@
-# **Phase II: Todo Full-Stack Web Application**
+# Todo Chatbot Application - Docker Containerization
 
-## Overview
-A modern, secure task management application that helps users organize their daily activities with a clean, intuitive interface. This full-stack application provides user authentication, task management capabilities, and responsive design for use across all devices.
+This project contains a complete Todo Chatbot application with three main components:
+- **Frontend**: Next.js application
+- **Backend**: FastAPI server
+- **MCP Server**: Python MCP server
 
-## Key Features
-- **Task Management**: Create, update, delete, and organize tasks with ease
-- **User Authentication**: Secure sign-up and login with password recovery
-- **Personalized Experience**: Each user has their own private task space
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
-- **Advanced Organization**: Categorize tasks by priority, due dates, and status
+All components are containerized using Docker and can be run together using Docker Compose.
 
-## Technology Stack
-Built with modern, reliable technologies for optimal performance and security:
+## Prerequisites
 
-- **Frontend**: Next.js 16+ for fast, interactive user interfaces
-- **Backend**: Python FastAPI for robust API services
-- **Database**: Neon Serverless PostgreSQL for secure data storage
-- **Authentication**: Better Auth for secure user management
-- **Development**: Claude Code + Spec-Kit Plus for efficient development
+- Docker Desktop (with Docker Compose)
+- At least 4GB of RAM for smooth operation
 
-## Core Capabilities
+## Quick Start
 
-### Task Management
-- Create new tasks with titles and descriptions
-- Mark tasks as complete/incomplete with one click
-- Edit existing tasks to update details
-- Delete tasks when no longer needed
-- Filter and search through your task list
+1. Clone the repository
+2. Navigate to this directory: `cd phase-04`
+3. Copy the example environment files and customize them:
 
-### User Management
-- Secure registration and login system
-- Password reset functionality
-- Protected user sessions
-- Personalized task organization
-
-### Organization Features
-- Priority levels (high, medium, low)
-- Due dates and reminders
-- Task categorization and tagging
-- Recurring tasks for regular activities
-
-## Getting Started
-
-### Prerequisites
-- Node.js 20+ installed on your system
-- A package manager (npm, yarn, pnpm, or bun)
-
-### Quick Setup
-1. Install project dependencies:
 ```bash
-npm install
+# Copy example files for each service
+cp frontend/.env.example frontend/.env
+cp backend/.env.example backend/.env
+cp mcp_server/.env.example mcp_server/.env
 ```
 
-2. Start the development server:
+4. Edit the `.env` files with your actual configuration values
+5. Start all services:
+
 ```bash
-npm run dev
+docker-compose -f compose.yaml up --build
 ```
 
-3. Visit [http://localhost:3000](http://localhost:3000) in your browser to begin using the application.
+The applications will be available at:
+- Frontend: http://localhost:3000
+- Backend API docs: http://localhost:8000/docs
+- MCP Server: http://localhost:8080
 
-For detailed setup instructions, configuration options, and API documentation, check the specific README files in the backend and frontend directories.
+## Environment Configuration
 
-## Application Structure
-The application is organized into two main components:
-- **Frontend**: Contains the user interface built with Next.js
-- **Backend**: REST API built with Python FastAPI for data management
+Each service has an `.env.example` file that shows the required environment variables. Copy these to `.env` and fill in your values:
 
-This separation allows for independent development and deployment of each component while maintaining a cohesive user experience.
+- `frontend/.env` - Frontend configuration
+- `backend/.env` - Backend API configuration
+- `mcp_server/.env` - MCP server configuration
+
+## Docker Compose
+
+The main compose file (`compose.yaml`) includes:
+- Frontend service (Next.js) on port 3000
+- Backend service (FastAPI) on port 8000
+- MCP server on port 8080
+- PostgreSQL database on port 5432
+- Health checks for all services
+- Proper service dependencies
+
+## Docker Images
+
+All services use optimized multi-stage Docker builds:
+- Frontend: node:24.11.1-alpine
+- Backend: python:3.12.6-alpine
+- MCP Server: python:3.12.6-alpine
+
+All containers run as non-root users for security.
+
+## Image Optimization
+
+Dockerfiles are optimized to:
+- Use multi-stage builds to separate build and runtime dependencies
+- Remove build tools from final images to reduce size
+- Use minimal base images (Alpine Linux)
+- Implement proper health checks
+- Run as non-root users

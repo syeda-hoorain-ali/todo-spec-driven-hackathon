@@ -3,9 +3,8 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 import logging
 from sqlmodel import select
-from contextlib import asynccontextmanager
-from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+from .config import settings
 from .database import get_session_with_user
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
 from .tools import create_task, list_tasks_filtered, complete_task_in_db, delete_task_from_db, update_task_in_db
@@ -20,8 +19,19 @@ mcp = FastMCP(
     json_response=True,
     stateless_http=True,
     streamable_http_path="/",
-    port=8001,
+    port=settings.port,
+    host="0.0.0.0",
 )
+
+
+# Add a health check endpoint
+@mcp.custom_route("/health", methods=["GET"])
+async def health_check(request):
+    from starlette.responses import JSONResponse
+    return JSONResponse({"status": "healthy", "service": "mcp-server"})
+
+
+mcp.custom_route
 
 # Define response models for the tools
 class AddTaskResponse(BaseModel):
@@ -165,28 +175,6 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
         logger.error(f"Error in update_task: {str(e)}")
         raise
 
-# Create the ASGI app for Vercel
-# CRITICAL: You need the lifespan context manager
-@asynccontextmanager
-async def lifespan(app):
-    # init_db()
-    async with mcp.session_manager.run():
-        yield
-
-
-# Export the ASGI app
-app = mcp.streamable_http_app()
-app.router.lifespan_context = lifespan
-# Explicitly allow Vercel hosts
-app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=[
-        "*.vercel.app",
-        "taskflow-phase-03-mcp-server.vercel.app",
-        "localhost",
-        "127.0.0.1"
-    ]
-)
 
 if __name__ == "__main__":
     import sys
@@ -196,7 +184,7 @@ if __name__ == "__main__":
         # Run as MCP server via stdio
         mcp.run(transport="stdio")
     else:
-        # For development, just run the server in the foreground
+        # For development and containerized environments, run the server
         mcp.run(transport="streamable-http")
 
         print("Starting MCP server...")

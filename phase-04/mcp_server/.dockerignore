@@ -1,0 +1,82 @@
+# Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+
+# Test and development directories
+/tests/
+/test*/
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build outputs
+build/
+dist/
+out/
+
+# Debug and log files
+*.log
+debug/
+
+# Version control
+.git/
+.gitignore
+.svn/
+.hg/
+
+# Environment and secrets
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.crt
+
+# Local and temporary files
+.local/
+local/
+tmp/
+temp/
+*.tmp
+
+# Documentation
+README*
+*.md
+docs/
+
+# Docker and compose files
+Dockerfile*
+docker-compose*
+
+# Node.js (if any)
+node_modules/
+npm-debug.log
+yarn-debug.log
+
+# Go (if any)
+/vendor/
+*.test
+.go-cache/
+
+# Java (if any)
+target/
+*.class
+.gradle/
+
+# Miscellaneous
+*.example
+.python-version
+
+# Project-specific config
+config.local.*
+*.local.yml

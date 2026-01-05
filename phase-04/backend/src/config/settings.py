@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     neon_api_key: str
 
     # MCP server settings
-    mcp_server_url: str = "http://localhost:8001"
+    mcp_server_url: str = "http://localhost:8080"
 
     # Better Auth settings
     better_auth_secret: str
@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     frontend_base_url: str = "http://localhost:3000"
 
     # LLM settings
-    google_api_key: str
+    gemini_api_key: str
     gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
     def configure_llm_provider(self):
@@ -43,7 +43,7 @@ class Settings(BaseSettings):
         set_default_openai_api("chat_completions")
 
         external_client = AsyncOpenAI(
-            api_key=self.google_api_key,
+            api_key=self.gemini_api_key,
             base_url=self.gemini_base_url,
         )
         set_default_openai_client(external_client)

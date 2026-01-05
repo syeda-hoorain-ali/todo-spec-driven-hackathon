@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import asyncio
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
@@ -21,16 +22,27 @@ from src.utils.exceptions import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Retry logic for MCP connection
+    max_retries = 5
+    retry_delay = 2
     agent, mcp_server = create_todo_chat_agent()
-    try:
-        await mcp_server.connect()
-        logger.info("MCP server connected")
-        yield
-
-    finally:
-        # Cleanup all MCP servers
-        await mcp_server.cleanup()
-        logger.info("MCP server cleanup")
+    
+    for attempt in range(max_retries):
+        try:
+            await mcp_server.connect()
+            logger.info("MCP server connected")
+            break
+        except Exception as e:
+            if attempt == max_retries - 1:
+                raise
+            print(f"MCP connection attempt {attempt + 1} failed, retrying in {retry_delay}s...")
+            await asyncio.sleep(retry_delay)
+    
+    yield
+    
+    # Cleanup
+    await mcp_server.cleanup()
+    logger.info("MCP server cleanup")
 
 
 app = FastAPI(title="Secured Todo API", version="1.0.0", lifespan=lifespan)

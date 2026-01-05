@@ -46,3 +46,49 @@ The server follows clean architecture principles with separation of concerns:
 ## MCP Protocol
 
 This server implements the Model Context Protocol to allow AI agents to interact with the task management system in a standardized way.
+
+## Running with Docker
+
+You can run the MCP server and its required PostgreSQL database using Docker Compose. This setup uses Python 3.12 and installs all dependencies in a virtual environment using `uv` for reproducible builds.
+
+### Requirements
+
+- Docker and Docker Compose installed on your system
+- (Optional) A `.env` file with the required environment variables (see `.env.example`)
+
+### Environment Variables
+
+The following environment variables are required for the MCP server to run (set in your `.env` file or directly in the compose file):
+
+- `DATABASE_URL`: PostgreSQL connection string (the default database is provided by the `postgres-db` service)
+- `JWT_SECRET_KEY`: Secret key for JWT authentication
+- `JWT_ALGORITHM`: Algorithm for JWT (default: HS256)
+- `ACCESS_TOKEN_EXPIRE_MINUTES`: Token expiration time in minutes
+
+The `postgres-db` service uses:
+- `POSTGRES_DB`: Database name (default: `mcp`)
+- `POSTGRES_USER`: Database user (default: `mcpuser`)
+- `POSTGRES_PASSWORD`: Database password (default: `mcppassword`)
+
+### Build and Run
+
+1. (Optional) Copy `.env.example` to `.env` and fill in your secrets and configuration.
+2. Build and start the services:
+
+   ```sh
+   docker compose up --build
+   ```
+
+   This will start both the MCP server and a PostgreSQL database.
+
+### Ports
+
+- MCP server HTTP API: [localhost:8080](http://localhost:8080)
+- PostgreSQL: localhost:5432 (for direct DB access if needed)
+
+### Notes
+
+- The MCP server depends on the `postgres-db` service and will wait for it to be ready.
+- Persistent database storage is configured via a Docker volume (`postgres_data`).
+- The MCP server runs as a non-root user for improved security.
+- If you need to customize the database connection, update the `DATABASE_URL` in your `.env` file accordingly.
