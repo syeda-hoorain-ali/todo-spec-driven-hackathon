@@ -42,7 +42,7 @@ def get_session_with_user_context(user_id: str = Path(...), token: str = Depends
     # Create and yield the session with user context
     with Session(engine) as session:
         # Set the current user ID for RLS policies (only for PostgreSQL/production)
-        if 'postgresql' in settings.neon_database_url.lower():
+        if 'postgresql' in settings.database_url.lower():
             session.exec(text("SET app.current_user_id = :user_id"), params={"user_id": user_id})
         yield session
 

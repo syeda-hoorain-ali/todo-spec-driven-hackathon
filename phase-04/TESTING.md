@@ -14,7 +14,7 @@ This document explains how to build and test the containerized applications to v
 
 ```bash
 # Navigate to the phase-04 directory
-cd D:\todo-app\phase-04
+cd phase-04
 
 # Build and run all services
 docker-compose -f compose.yaml up --build
@@ -27,19 +27,19 @@ docker-compose -f compose.yaml up --build -d
 
 ```bash
 # Build the frontend container
-cd D:\todo-app\phase-04\frontend
-docker build -t todo-frontend:latest .
+cd phase-04\frontend
+docker build -t taskflow-frontend:latest .
 
 # Build the backend container
-cd D:\todo-app\phase-04\backend
-docker build -t todo-backend:latest .
+cd phase-04\backend
+docker build -t taskflow-backend:latest .
 
 # Build the MCP server container
-cd D:\todo-app\phase-04\mcp_server
-docker build -t todo-mcp-server:latest .
+cd phase-04\mcp_server
+docker build -t taskflow-mcp-server:latest .
 
 # Run the containers with Docker Compose
-cd D:\todo-app\phase-04
+cd phase-04
 docker-compose -f compose.yaml up
 ```
 
@@ -99,4 +99,4 @@ After building, verify image sizes meet the requirements:
 - Backend: Should be under 150MB
 - MCP Server: Should be optimized as well
 
-Check sizes with: `docker images | grep todo-`
+Check sizes with: `docker images | grep taskflow-`
