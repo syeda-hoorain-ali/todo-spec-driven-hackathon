@@ -10,7 +10,7 @@ This project provides a Docker-based setup for easy local development and deploy
 ### Environment Variables
 The following environment variables are required for the application to start (see `docker-compose.yml`):
 
-- `NEON_DATABASE_URL`: Database connection string (default: `postgresql://postgres:postgres@python-db:5432/postgres`)
+- `DATABASE_URL`: Database connection string (default: `postgresql://postgres:postgres@python-db:5432/postgres`)
 - `JWT_ALGORITHM`: Algorithm used for JWT tokens (default: `HS256`)
 - (Recommended) Place secrets such as `BETTER_AUTH_SECRET` in a `.env` file and uncomment the `env_file` line in `docker-compose.yml` for secure configuration.
 
