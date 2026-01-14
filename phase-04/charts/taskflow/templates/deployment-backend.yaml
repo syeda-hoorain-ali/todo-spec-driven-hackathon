@@ -58,13 +58,5 @@ spec:
                 secretKeyRef:
                   name: {{ include "taskflow.fullname" . }}-secrets
                   key: better-auth-secret
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: http
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}

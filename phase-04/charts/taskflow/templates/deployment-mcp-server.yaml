@@ -67,9 +67,13 @@ spec:
             httpGet:
               path: /health
               port: http
+            initialDelaySeconds: {{ .Values.healthChecks.mcpServer.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.mcpServer.livenessProbe.periodSeconds }}
           readinessProbe:
             httpGet:
               path: /health
               port: http
+            initialDelaySeconds: 15
+            periodSeconds: 5
           resources:
             {{- toYaml .Values.mcpServer.resources | nindent 12 }}

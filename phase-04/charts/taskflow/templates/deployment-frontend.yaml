@@ -68,13 +68,5 @@ spec:
                 secretKeyRef:
                   name: {{ include "taskflow.fullname" . }}-secrets
                   key: smtp-pass
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
