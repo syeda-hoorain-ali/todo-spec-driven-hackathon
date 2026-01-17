@@ -16,14 +16,14 @@ links:
   adr: null
   pr: null
 files:
- - D:\todo-app\phase-04\charts\taskflow\templates\secrets.yaml
- - D:\todo-app\phase-04\charts\taskflow\templates\secrets.example.yaml
- - D:\todo-app\phase-04\charts\taskflow\templates\deployment-frontend.yaml
- - D:\todo-app\phase-04\charts\taskflow\templates\configmap-secrets.yaml
- - D:\todo-app\.gitignore
- - D:\todo-app\README.md
- - D:\todo-app\LICENSE
- - D:\todo-app\CONTRIBUTING.md
+ - phase-04/charts/taskflow/templates/secrets.yaml
+ - phase-04/charts/taskflow/templates/secrets.example.yaml
+ - phase-04/charts/taskflow/templates/deployment-frontend.yaml
+ - phase-04/charts/taskflow/templates/configmap-secrets.yaml
+ - .gitignore
+ - README.md
+ - LICENSE
+ - CONTRIBUTING.md
 tests:
  - Kubernetes deployment with Helm charts
  - Environment variable configuration
