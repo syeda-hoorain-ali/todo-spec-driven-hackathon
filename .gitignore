@@ -47,8 +47,14 @@ Thumbs.db
 .env.local
 .env.*.local
 
+# Kubernetes secrets
+**/secrets.yaml
+!**/secrets.example.yaml
+
 # Coverage
 .coverage
 htmlcov/
 .coverage.*
 .cov
+
+tmpclaude-*

@@ -16,8 +16,8 @@ load_dotenv()
 config = context.config
 
 config.get_section(config.config_ini_section, {})
-neon_database_url = os.getenv("NEON_DATABASE_URL")
-config.set_main_option("sqlalchemy.url", neon_database_url)
+database_url = os.getenv("DATABASE_URL")
+config.set_main_option("sqlalchemy.url", database_url)
 
 
 # Interpret the config file for Python logging.

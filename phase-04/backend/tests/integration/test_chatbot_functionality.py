@@ -48,7 +48,6 @@ async def test_agent_with_mcp_integration():
         print(f"Error in agent MCP integration test: {e}")
         import traceback
         traceback.print_exc()
-        print("Note: This may fail if NEON_API_KEY is not properly set in environment")
 
 
 def test_mcp_server_http_endpoints():

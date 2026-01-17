@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "taskflow.fullname" . }}-mcp-server
+  labels:
+    {{- include "taskflow.labels" . | nindent 4 }}
+    app: mcp-server
+spec:
+  replicas: {{ .Values.mcpServer.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "taskflow.selectorLabels" . | nindent 6 }}
+      app: mcp-server
+  template:
+    metadata:
+      labels:
+        {{- include "taskflow.selectorLabels" . | nindent 8 }}
+        app: mcp-server
+    spec:
+      containers:
+        - name: mcp-server
+          image: "{{ .Values.mcpServer.image.repository }}:{{ .Values.mcpServer.image.tag }}"
+          imagePullPolicy: {{ .Values.mcpServer.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            # From ConfigMap
+            - name: DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "taskflow.fullname" . }}-config
+                  key: DEBUG
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "taskflow.fullname" . }}-config
+                  key: PORT
+            - name: ACCESS_TOKEN_EXPIRE_MINUTES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "taskflow.fullname" . }}-config
+                  key: ACCESS_TOKEN_EXPIRE_MINUTES
+            - name: JWT_ALGORITHM
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "taskflow.fullname" . }}-config
+                  key: JWT_ALGORITHM_MCP
+            # From Secrets
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "taskflow.fullname" . }}-secrets
+                  key: database-url
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "taskflow.fullname" . }}-secrets
+                  key: jwt-secret-key
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "taskflow.fullname" . }}-secrets
+                  key: gemini-api-key
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: {{ .Values.healthChecks.mcpServer.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.mcpServer.livenessProbe.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.mcpServer.resources | nindent 12 }}

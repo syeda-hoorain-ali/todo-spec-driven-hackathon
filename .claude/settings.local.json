@@ -10,17 +10,22 @@
       "Bash(.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks)",
       "Bash(uv run pytest tests/ -v)",
       "Bash(uv run pytest)",
-      "Bash(xargs -I {} sh -c 'find . -path \"\"./phase-01/*\"\" -type f -newer {} 2>/dev/null || echo \"\"Checking phase-01 files\"\"')",
       "Bash(git fetch --all --prune)",
       "Bash(npm run test:run)",
       "Bash(npm run build)",
-      "mcp__context7__get-library-docs"
+      "mcp__context7__get-library-docs",
+      "Bash(minikube start --driver=docker)",
+      "Bash(kubectl get services -n taskflow)",
+      "Bash(kubectl get ingress -n taskflow)",
+      "Bash(./scripts/health-check.sh)",
+      "Bash(kubectl get deployments -n taskflow)",
+      "Bash(kubectl get pods -n taskflow)"
     ],
     "deny": [],
     "ask": []
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "context7-http"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

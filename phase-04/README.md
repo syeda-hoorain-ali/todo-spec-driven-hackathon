@@ -1,6 +1,6 @@
-# Todo Chatbot Application - Docker Containerization
+# Taskflow Application - Docker Containerization
 
-This project contains a complete Todo Chatbot application with three main components:
+This project contains a complete Taskflow application with three main components:
 - **Frontend**: Next.js application
 - **Backend**: FastAPI server
 - **MCP Server**: Python MCP server

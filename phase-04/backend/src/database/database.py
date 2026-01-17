@@ -12,7 +12,7 @@ load_dotenv(find_dotenv())
 # Create the database engine
 # Only enable SQL echoing in development or if debug is True
 echo_sql = settings.environment.lower() != "production" or settings.debug
-engine = create_engine(settings.neon_database_url, echo=echo_sql)
+engine = create_engine(settings.database_url, echo=echo_sql)
 
 
 def get_session() -> Generator[Session, None, None]:

@@ -12,8 +12,7 @@ class Settings(BaseSettings):
     )
 
     # Neon Database settings
-    neon_database_url: str
-    neon_api_key: str
+    database_url: str
 
     # MCP server settings
     mcp_server_url: str = "http://localhost:8080"

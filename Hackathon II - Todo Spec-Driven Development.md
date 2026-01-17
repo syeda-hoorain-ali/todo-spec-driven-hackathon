@@ -52,10 +52,9 @@ These form the foundation—quick to build, essential for any MVP:
 
 Add these to make the app feel polished and practical:
 
-1.   
-2. Priorities & Tags/Categories – Assign levels (high/medium/low) or labels (work/home)  
-3. Search & Filter – Search by keyword; filter by status, priority, or date  
-4. Sort Tasks – Reorder by due date, priority, or alphabetically
+1. Priorities & Tags/Categories – Assign levels (high/medium/low) or labels (work/home)  
+2. Search & Filter – Search by keyword; filter by status, priority, or date  
+3. Sort Tasks – Reorder by due date, priority, or alphabetically
 
 ## **Advanced Level (Intelligent Features)**
 
@@ -958,7 +957,7 @@ Sign up at [https://azure.microsoft.com/en-us/free/.%22](https://azure.microsoft
 
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐  
 │                 │     │                 │     │                 │     │                 │  
-│  Todo Service   │────▶│  Kafka Topic    │────▶│  Notification   │────▶│  User Device    │  
+│  Todo Service   │────▶│  Kafka Topic   │────▶│  Notification  │────▶│  User Device    │  
 │  (Producer)     │     │  "reminders"    │     │  Service        │     │  (Push/Email)   │  
 │                 │     │                 │     │  (Consumer)     │     │                 │  
 └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
@@ -969,7 +968,7 @@ When a task with a due date is created, publish a reminder event. A separate not
 
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐  
 │                 │     │                 │     │                 │  
-│  Task Completed │────▶│  Kafka Topic    │────▶│  Recurring Task │  
+│  Task Completed │────▶│  Kafka Topic   │────▶│  Recurring Task │  
 │  Event          │     │  "task-events"  │     │  Service        │  
 │                 │     │                 │     │  (Creates next) │  
 └─────────────────┘     └─────────────────┘     └─────────────────┘
@@ -980,7 +979,7 @@ When a recurring task is marked complete, publish an event. A separate service c
 
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐  
 │                 │     │                 │     │                 │  
-│  All Task       │────▶│  Kafka Topic    │────▶│  Audit Service  │  
+│  All Task       │────▶│  Kafka Topic   │────▶│  Audit Service  │  
 │  Operations     │     │  "task-events"  │     │  (Stores log)   │  
 │                 │     │                 │     │                 │  
 └─────────────────┘     └─────────────────┘     └─────────────────┘
@@ -991,7 +990,7 @@ Every task operation (create, update, delete, complete) publishes to Kafka. An a
 
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐  
 │                 │     │                 │     │                 │     │                 │  
-│  Task Changed   │────▶│  Kafka Topic    │────▶│  WebSocket      │────▶│  All Connected  │  
+│  Task Changed   │────▶│  Kafka Topic   │────▶│  WebSocket      │────▶│  All Connected │  
 │  (Any Client)   │     │  "task-updates" │     │  Service        │     │  Clients        │  
 │                 │     │                 │     │                 │     │                 │  
 └─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
@@ -1000,22 +999,22 @@ Changes from one client are broadcast to all connected clients in real-time.
 
 # **Recommended Architecture**
 
-┌──────────────────────────────────────────────────────────────────────────────────────┐  
-│                              KUBERNETES CLUSTER                                       │  
-│                                                                                       │  
-│  ┌─────────────┐   ┌─────────────┐   ┌─────────────────────────────────────────────┐ │  
-│  │  Frontend   │   │  Chat API   │   │              KAFKA CLUSTER                  │ │  
-│  │  Service    │──▶│  \+ MCP      │──▶│  ┌─────────────┐  ┌─────────────────────┐  │ │  
+┌─────────────────────────────────────────────────────────────────────────────────────┐  
+│                              KUBERNETES CLUSTER                                     │  
+│                                                                                     │  
+│  ┌─────────────┐   ┌─────────────┐   ┌────────────────────────────────────────────┐ │  
+│  │  Frontend   │   │  Chat API   │   │              KAFKA CLUSTER                 │ │  
+│  │  Service    │──▶│  \+ MCP    │──▶│  ┌─────────────┐  ┌─────────────────────┐  │ │  
 │  └─────────────┘   │  Tools      │   │  │ task-events │  │ reminders           │  │ │  
 │                    └──────┬──────┘   │  └─────────────┘  └─────────────────────┘  │ │  
 │                           │          └──────────┬────────────────────┬────────────┘ │  
 │                           │                     │                    │              │  
 │                           ▼                     ▼                    ▼              │  
-│                    ┌─────────────┐   ┌─────────────────┐   ┌─────────────────┐     │  
-│                    │   Neon DB   │   │ Recurring Task  │   │  Notification   │     │  
-│                    │  (External) │   │    Service      │   │    Service      │     │  
-│                    └─────────────┘   └─────────────────┘   └─────────────────┘     │  
-└──────────────────────────────────────────────────────────────────────────────────────┘
+│                    ┌─────────────┐   ┌─────────────────┐   ┌─────────────────┐      │  
+│                    │   Neon DB   │   │ Recurring Task  │   │  Notification   │      │  
+│                    │  (External) │   │    Service      │   │    Service      │      │  
+│                    └─────────────┘   └─────────────────┘   └─────────────────┘      │  
+└─────────────────────────────────────────────────────────────────────────────────────┘
 
 # **Kafka Topics**
 
@@ -1186,7 +1185,7 @@ producer.send("task-events", {"event\_type": "created", "task\_id": 1})
 ## **Without Dapr (Direct Dependencies)**
 
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐  
-│  Frontend   │────▶│  Backend    │────▶│  Kafka      │  
+│  Frontend   │────▶│  Backend   │────▶│  Kafka      │  
 │             │     │  (FastAPI)  │────▶│  Neon DB    │  
 └─────────────┘     └─────────────┘     └─────────────┘  
                            │  
@@ -1197,14 +1196,14 @@ producer.send("task-events", {"event\_type": "created", "task\_id": 1})
 
 ## **With Dapr (Abstracted Dependencies)**
 
-┌─────────────┐     ┌─────────────────────────────────┐     ┌─────────────┐  
-│  Frontend   │     │          Backend Pod            │     │             │  
-│  \+ Dapr     │────▶│  ┌─────────┐    ┌───────────┐  │     │  Dapr       │  
-│  Sidecar    │     │  │ FastAPI │◀──▶│   Dapr    │──┼────▶│  Components │  
-└─────────────┘     │  │  App    │    │  Sidecar  │  │     │  \- Kafka    │  
-                    │  └─────────┘    └───────────┘  │     │  \- Neon DB  │  
-                    └─────────────────────────────────┘     │  \- Secrets  │  
-                                                           └─────────────┘  
+┌─────────────┐     ┌─────────────────────────────────┐      ┌─────────────┐  
+│  Frontend   │     │           Backend Pod           │      │             │  
+│  \+ Dapr    │────▶│  ┌─────────┐     ┌──────────┐  │      │  Dapr       │  
+│  Sidecar    │     │  │ FastAPI │◀──▶│   Dapr   │───┼────▶│  Components │  
+└─────────────┘     │  │  App    │     │  Sidecar  │  │      │  - Kafka    │  
+                    │  └─────────┘     └───────────┘  │      │  - Neon DB  │  
+                    └─────────────────────────────────┘      │  - Secrets  │  
+                                                             └─────────────┘  
                     Loose coupling:  
                     \- App talks to Dapr via HTTP  
                     \- Dapr handles Kafka, DB, etc.  
@@ -1339,24 +1338,24 @@ api\_key \= response.json()\["openai-api-key"\]
 # **Complete Dapr Architecture**
 
 ┌──────────────────────────────────────────────────────────────────────────────────────┐  
-│                              KUBERNETES CLUSTER                                       │  
-│                                                                                       │  
-│  ┌─────────────────────┐   ┌─────────────────────┐   ┌─────────────────────┐        │  
-│  │    Frontend Pod     │   │    Backend Pod      │   │  Notification Pod   │        │  
-│  │ ┌───────┐ ┌───────┐ │   │ ┌───────┐ ┌───────┐ │   │ ┌───────┐ ┌───────┐ │        │  
-│  │ │ Next  │ │ Dapr  │ │   │ │FastAPI│ │ Dapr  │ │   │ │Notif  │ │ Dapr  │ │        │  
-│  │ │  App  │◀┼▶Sidecar│ │   │ │+ MCP  │◀┼▶Sidecar│ │   │ │Service│◀┼▶Sidecar│ │        │  
-│  │ └───────┘ └───────┘ │   │ └───────┘ └───────┘ │   │ └───────┘ └───────┘ │        │  
-│  └──────────┬──────────┘   └──────────┬──────────┘   └──────────┬──────────┘        │  
-│             │                         │                         │                    │  
-│             └─────────────────────────┼─────────────────────────┘                    │  
+│                              KUBERNETES CLUSTER                                      │  
+│                                                                                      │  
+│  ┌─────────────────────┐   ┌───────────────────────┐   ┌───────────────────────┐     │  
+│  │    Frontend Pod     │   │      Backend Pod      │   │    Notification Pod   │     │  
+│  │ ┌───────┐ ┌───────┐ │   │ ┌───────┐  ┌────────┐ │   │ ┌───────┐ ┌─────────┐ │     │  
+│  │ │ Next  │ │ Dapr  │ │   │ │FastAPI│  │ Dapr   │ │   │ │Notif  │ │ Dapr    │ │     │  
+│  │ │  App  │◀┼▶Sidecar│   │ │ + MCP │◀┼▶Sidecar│ │   │ │Service│◀┼▶Sidecar│ │    │  
+│  │ └───────┘ └───────┘ │   │ └───────┘  └────────┘ │   │ └───────┘ └─────────┘ │     │  
+│  └──────────┬──────────┘   └──────────┬────────────┘   └───────────┬───────────┘     │  
+│             │                         │                            │                 │  
+│             └─────────────────────────┼────────────────────────────┘                 │  
 │                                       │                                              │  
 │                          ┌────────────▼────────────┐                                 │  
 │                          │    DAPR COMPONENTS      │                                 │  
 │                          │  ┌──────────────────┐   │                                 │  
-│                          │  │ pubsub.kafka     │───┼────▶ Redpanda/Kafka             │  
+│                          │  │ pubsub.kafka     │───┼────▶ Redpanda/Kafka            │  
 │                          │  ├──────────────────┤   │                                 │  
-│                          │  │ state.postgresql │───┼────▶ Neon DB                    │  
+│                          │  │ state.postgresql │───┼────▶ Neon DB                   │  
 │                          │  ├──────────────────┤   │                                 │  
 │                          │  │ bindings.cron    │   │  (Scheduled triggers)           │  
 │                          │  ├──────────────────┤   │                                 │  
