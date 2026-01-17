@@ -49,7 +49,7 @@ for deployment in $DEPLOYMENTS; do
     READY_REPLICAS=$(kubectl get deployment "$deployment" -n "$NAMESPACE" -o jsonpath='{.status.readyReplicas}')
     DESIRED_REPLICAS=$(kubectl get deployment "$deployment" -n "$NAMESPACE" -o jsonpath='{.spec.replicas}')
 
-    if [ "$READY_REPLICAS" = "$DESIRE_REPLICAS" ] && [ "$READY_REPLICAS" != "0" ]; then
+    if [ "$READY_REPLICAS" = "$DESIRED_REPLICAS" ] && [ "$READY_REPLICAS" != "0" ]; then
         echo "✓ Deployment $deployment is healthy ($READY_REPLICAS/$DESIRE_REPLICAS replicas ready)"
     else
         echo "✗ Deployment $deployment is not healthy ($READY_REPLICAS/$DESIRE_REPLICAS replicas ready)"
