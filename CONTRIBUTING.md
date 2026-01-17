@@ -65,7 +65,9 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 4. For Phase IV (Kubernetes Deployment):
    ```bash
    cd phase-04
-   # Follow the Kubernetes deployment instructions
+   # Run the setup and deployment scripts
+   ./scripts/setup-minikube.sh
+   ./scripts/deploy-app.sh
    ```
 
 ## Code Style
