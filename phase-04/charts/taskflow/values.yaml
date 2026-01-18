@@ -94,19 +94,18 @@ ingress:
   annotations:
     # kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
   hosts:
     - host: taskflow.local
       paths:
         - path: /
           pathType: Prefix
+          service: frontend
   tls: []
-  #  - secretName: taskflow-tls
-  #    hosts:
-  #      - taskflow.local
 
 # PostgreSQL configuration
 postgresql:
-  enabled: true
+  enabled: false
   image:
     repository: postgres
     tag: "15-alpine"

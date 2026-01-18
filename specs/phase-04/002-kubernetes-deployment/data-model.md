@@ -46,21 +46,21 @@
 
 ### Frontend Service
 - **Name**: frontend-service
-- **Type**: ClusterIP
+- **Type**: LoadBalancer
 - **Port**: 80
 - **Target Port**: 3000
 - **Selector**: app=frontend
 
 ### Backend Service
 - **Name**: backend-service
-- **Type**: ClusterIP
+- **Type**: LoadBalancer
 - **Port**: 80
 - **Target Port**: 8000
 - **Selector**: app=backend
 
 ### MCP Server Service
 - **Name**: mcp-server-service
-- **Type**: ClusterIP
+- **Type**: LoadBalancer
 - **Port**: 80
 - **Target Port**: 8080
 - **Selector**: app=mcp-server
