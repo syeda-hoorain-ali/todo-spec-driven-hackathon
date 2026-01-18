@@ -4,7 +4,7 @@ metadata:
   name: {{ include "taskflow.fullname" . }}-backend-service
   labels:
     {{- include "taskflow.labels" . | nindent 4 }}
-    app: backend
+    app.kubernetes.io/component: backend
 spec:
   type: {{ .Values.backend.service.type }}
   ports:
@@ -14,4 +14,3 @@ spec:
       name: http
   selector:
     {{- include "taskflow.selectorLabels" . | nindent 4 }}
-    app: backend

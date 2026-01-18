@@ -7,7 +7,7 @@ metadata:
 data:
   # Frontend configuration
   NEXT_PUBLIC_BASE_URL: "http://{{ include "taskflow.fullname" . }}-frontend-service:3000"
-  NEXT_PUBLIC_API_BASE_URL: "http://{{ include "taskflow.fullname" . }}-backend-service:8000/api/v1"
+  NEXT_PUBLIC_API_BASE_URL: "http://{{ include "taskflow.fullname" . }}-backend-service:8000/v1/api"
   NODE_ENV: "production"
 
   # Backend configuration

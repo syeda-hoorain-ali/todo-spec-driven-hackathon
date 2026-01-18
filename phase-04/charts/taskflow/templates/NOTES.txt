@@ -1,0 +1,42 @@
+==========================================================
+  TaskFlow - Advanced Todo Application with AI Assistant 
+==========================================================
+
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named: {{ .Release.Name }}
+
+=== Access the Application ===
+
+Frontend (Web UI):
+  URL: http://localhost:{{ .Values.frontend.service.port }}
+
+Backend API:
+  URL: http://localhost:{{ .Values.backend.service.port }}
+  Swagger Docs: http://localhost:{{ .Values.backend.service.port }}/docs
+
+=== Verify Deployment ===
+
+Check all pods are running:
+  kubectl get pods -n taskflow
+
+Check services:
+  kubectl get svc -n taskflow
+
+View backend logs:
+  kubectl logs -f deployment/{{ include "taskflow.fullname" . }}-backend -n taskflow
+
+View frontend logs:
+  kubectl logs -f deployment/{{ include "taskflow.fullname" . }}-frontend -n taskflow
+
+=== Important Notes ===
+
+Make sure you have set the envoirenment variables in secrects.yaml
+
+=== Uninstall ===
+
+To uninstall the chart:
+  helm uninstall {{ .Release.Name }} -n taskflow
+
+To also delete the namespace:
+  kubectl delete namespace taskflow

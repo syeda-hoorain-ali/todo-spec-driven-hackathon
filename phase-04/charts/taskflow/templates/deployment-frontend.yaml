@@ -26,6 +26,9 @@ spec:
               containerPort: 3000
               protocol: TCP
           env:
+            # Host configuration to bind to all interfaces
+            - name: HOST
+              value: "0.0.0.0"
             # From ConfigMap
             - name: NEXT_PUBLIC_BASE_URL
               valueFrom:
