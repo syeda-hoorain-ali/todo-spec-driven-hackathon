@@ -26,7 +26,7 @@ All Python code must follow TDD principles - write tests first, then implement f
 Use `uv` as the exclusive package manager for all Python dependencies. All Python projects must use `pyproject.toml` for dependency specifications and follow modern Python packaging standards.
 
 ### Technology Stack Adherence
-Adhere to the specified technology stack: Next.js 16+, TypeScript, Tailwind CSS for frontend; Python FastAPI with uv for backend; SQLModel with Neon Serverless PostgreSQL for database; Better Auth with JWT for authentication; OpenAI Agents SDK and MCP SDK for AI integration.
+Adhere to the specified technology stack: Next.js 16+, TypeScript, Tailwind CSS for frontend; Python FastAPI with uv for backend; SQLModel with Neon Serverless PostgreSQL for database; Better Auth with JWT for authentication; OpenAI Agents SDK and MCP SDK for AI integration; DAPR for distributed application runtime; Apache Kafka for event streaming; Kubernetes for container orchestration; Docker for containerization.
 
 ### Quality Assurance Standards
 Maintain high code quality through testing, documentation, and peer reviews. All features must include proper documentation and pass automated quality checks before acceptance.

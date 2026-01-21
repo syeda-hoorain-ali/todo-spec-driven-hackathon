@@ -13,6 +13,14 @@ spec:
       app: backend
   template:
     metadata:
+      annotations:
+        {{- if .Values.dapr.enabled }}
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "{{ include "taskflow.fullname" . }}-backend"
+        dapr.io/app-port: "8000"
+        dapr.io/config: "{{ .Values.dapr.config }}"
+        dapr.io/log-level: "{{ .Values.dapr.logLevel }}"
+        {{- end }}
       labels:
         {{- include "taskflow.selectorLabels" . | nindent 8 }}
         app: backend
