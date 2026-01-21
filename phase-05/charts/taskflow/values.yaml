@@ -10,6 +10,12 @@ frontend:
     type: LoadBalancer
     port: 3000
   replicaCount: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 50
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
   resources:
     requests:
       memory: "128Mi"
@@ -28,6 +34,12 @@ backend:
     type: LoadBalancer
     port: 8000
   replicaCount: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 50
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
   resources:
     requests:
       memory: "256Mi"
@@ -47,6 +59,12 @@ mcpServer:
     type: LoadBalancer
     port: 8080
   replicaCount: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 50
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
   resources:
     requests:
       memory: "512Mi"
@@ -129,3 +147,9 @@ postgresql:
 # Network Policy configuration
 networkPolicy:
   enabled: true
+
+# DAPR configuration
+dapr:
+  enabled: true
+  config: "dapr-config"
+  logLevel: "info"

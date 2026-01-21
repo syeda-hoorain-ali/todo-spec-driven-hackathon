@@ -1,10 +1,26 @@
 ==========================================================
-  TaskFlow - Advanced Todo Application with AI Assistant 
+  TaskFlow - Advanced Todo Application with AI Assistant
 ==========================================================
 
 Thank you for installing {{ .Chart.Name }}!
 
 Your release is named: {{ .Release.Name }}
+
+{{ if .Values.dapr.enabled }}
+=== DAPR Integration Enabled ===
+
+DAPR sidecars are running alongside your applications:
+- Frontend: {{ include "taskflow.fullname" . }}-frontend
+- Backend: {{ include "taskflow.fullname" . }}-backend
+- MCP Server: {{ include "taskflow.fullname" . }}-mcp-server
+
+DAPR Features Available:
+- Service Invocation: Use DAPR for service-to-service communication
+- Pub/Sub: Event-driven communication via DAPR pubsub
+- State Management: Distributed state management
+- Configuration: DAPR configuration named "{{ .Values.dapr.config }}"
+- Observability: Built-in metrics, tracing, and health checks
+{{ end }}
 
 === Access the Application ===
 
@@ -15,28 +31,104 @@ Backend API:
   URL: http://localhost:{{ .Values.backend.service.port }}
   Swagger Docs: http://localhost:{{ .Values.backend.service.port }}/docs
 
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}
+{{- end }}
+{{- else if contains "NodePort" .Values.frontend.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "taskflow.fullname" . }}-frontend)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.frontend.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "taskflow.fullname" . }}-frontend'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "taskflow.fullname" . }}-frontend --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.frontend.service.port }}
+{{- else if contains "ClusterIP" .Values.frontend.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ include "taskflow.name" . }}-frontend,release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+{{- end }}
+
+Backend API:
+{{- if contains "NodePort" .Values.backend.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "taskflow.fullname" . }}-backend)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.backend.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "taskflow.fullname" . }}-backend'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "taskflow.fullname" . }}-backend --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.backend.service.port }}
+{{- else if contains "ClusterIP" .Values.backend.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ include "taskflow.name" . }}-backend,release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8000:$CONTAINER_PORT
+{{- end }}
+
+MCP Server:
+{{- if contains "NodePort" .Values.mcpServer.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "taskflow.fullname" . }}-mcp-server)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.mcpServer.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "taskflow.fullname" . }}-mcp-server'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "taskflow.fullname" . }}-mcp-server --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.mcpServer.service.port }}
+{{- else if contains "ClusterIP" .Values.mcpServer.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ include "taskflow.name" . }}-mcp-server,release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+{{- end }}
+
 === Verify Deployment ===
 
 Check all pods are running:
-  kubectl get pods -n taskflow
+  kubectl get pods -n {{ .Release.Namespace }}
 
 Check services:
-  kubectl get svc -n taskflow
+  kubectl get svc -n {{ .Release.Namespace }}
+
+{{ if .Values.dapr.enabled }}
+Check DAPR sidecars are running:
+  kubectl get pods -n {{ .Release.Namespace }} -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{range .spec.containers[*]}{.name}{"\n"}{end}{end}' | grep -E '(daprd|dapr)'
+
+Check DAPR status:
+  dapr status -k
+
+Interact with DAPR:
+  # Invoke services via DAPR
+  dapr invoke --app-id {{ include "taskflow.fullname" . }}-backend --method [method]
+
+  # Publish events
+  curl -X POST http://localhost:3500/v1.0/publish/[pubsub-name]/[topic] -H "Content-Type: application/json" -d '[payload]'
+{{ end }}
 
 View backend logs:
-  kubectl logs -f deployment/{{ include "taskflow.fullname" . }}-backend -n taskflow
+  kubectl logs -f deployment/{{ include "taskflow.fullname" . }}-backend -n {{ .Release.Namespace }}
 
 View frontend logs:
-  kubectl logs -f deployment/{{ include "taskflow.fullname" . }}-frontend -n taskflow
+  kubectl logs -f deployment/{{ include "taskflow.fullname" . }}-frontend -n {{ .Release.Namespace }}
+
+View MCP server logs:
+  kubectl logs -f deployment/{{ include "taskflow.fullname" . }}-mcp-server -n {{ .Release.Namespace }}
 
 === Important Notes ===
 
-Make sure you have set the envoirenment variables in secrects.yaml
+Make sure you have set the environment variables in secrets.yaml
+
+{{ if .Values.dapr.enabled }}
+DAPR components should be deployed separately:
+  # Deploy DAPR components
+  kubectl apply -f phase-05/dapr-components/
+{{ end }}
 
 === Uninstall ===
 
 To uninstall the chart:
-  helm uninstall {{ .Release.Name }} -n taskflow
+  helm uninstall {{ .Release.Name }} -n {{ .Release.Namespace }}
 
 To also delete the namespace:
-  kubectl delete namespace taskflow
+  kubectl delete namespace {{ .Release.Namespace }}
