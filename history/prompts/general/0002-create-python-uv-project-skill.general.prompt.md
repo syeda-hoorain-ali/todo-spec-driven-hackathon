@@ -1,5 +1,5 @@
 ---
-id: "002"
+id: "0002"
 title: "Create Python UV project skill"
 stage: "general"
 date: "2025-12-09"

@@ -1,5 +1,5 @@
 ---
-id: 004
+id: 0004
 title: Reusable Chatbot Creator Agent
 stage: general
 date: 2025-12-17

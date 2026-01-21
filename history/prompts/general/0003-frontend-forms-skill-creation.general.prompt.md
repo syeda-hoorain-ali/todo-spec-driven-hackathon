@@ -1,5 +1,5 @@
 ---
-id: 003
+id: 0003
 title: Frontend Forms Skill Creation
 stage: general
 date: 2025-12-10

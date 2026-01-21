@@ -1,5 +1,5 @@
 ---
-id: 2
+id: 0008
 title: "Git Workflow Completion"
 stage: "general"
 date: "2026-01-12"
@@ -14,7 +14,7 @@ links:
   ticket: null
   adr: null
   pr: "https://github.com/syeda-hoorain-ali/todo-spec-driven-hackathon/pull/9"
-files: |
+files: 
   - .claude/settings.local.json
   - .gitignore
   - README.md
@@ -38,7 +38,7 @@ files: |
   - phase-04/k8s/
   - phase-04/scripts/
   - specs/phase-04/002-kubernetes-deployment/
-tests: |
+tests: 
   - None (git workflow)
 outcome: "Successfully committed changes and created PR"
 evaluation: "Git workflow completed successfully with meaningful commit message and PR"
