@@ -1,5 +1,5 @@
 ---
-id: 1
+id: 0001
 title: Design TDD Agent and Skills for Todo Hackathon
 stage: plan
 date: 2025-12-07

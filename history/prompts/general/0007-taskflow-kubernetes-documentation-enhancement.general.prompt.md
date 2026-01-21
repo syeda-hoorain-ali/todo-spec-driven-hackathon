@@ -1,5 +1,5 @@
 ---
-id: 1
+id: 0007
 title: Complete Kubernetes Deployment and Documentation Enhancement
 stage: misc
 date: 2026-01-12
