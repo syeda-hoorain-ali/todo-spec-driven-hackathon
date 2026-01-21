@@ -122,7 +122,7 @@ Make sure you have set the environment variables in secrets.yaml
 {{ if .Values.dapr.enabled }}
 DAPR components should be deployed separately:
   # Deploy DAPR components
-  kubectl apply -f dapr-components/
+  kubectl apply -f phase-05/dapr-components/
 {{ end }}
 
 === Uninstall ===

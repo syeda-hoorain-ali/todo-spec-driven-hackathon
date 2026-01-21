@@ -7,8 +7,12 @@ spec:
   version: v1
   metadata:
   - name: redisHost
-    value: redis-master.default.svc.cluster.local:6379
+    secretKeyRef:
+      name: redis-credentials
+      key: redisHost
   - name: redisPassword
-    value: ""
+    secretKeyRef:
+      name: redis-credentials
+      key: redisPassword
   - name: actorStateStore
     value: "true"
