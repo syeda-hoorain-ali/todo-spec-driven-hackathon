@@ -1,0 +1,148 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-producers
+  namespace: todo-app
+  labels:
+    app: kafka-producers
+    component: event-publishing
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kafka-producers
+  template:
+    metadata:
+      labels:
+        app: kafka-producers
+        component: event-publishing
+    spec:
+      containers:
+      - name: task-service-producer
+        image: todo-chatbot-backend:kafka-integration
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka-cluster:9092"
+        - name: KAFKA_CLIENT_ID
+          value: "todo-chatbot-task-producer"
+        - name: APP_ENV
+          value: "production"
+        - name: LOG_LEVEL
+          value: "INFO"
+        command: ["python", "-m", "src.services.task_service"]
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: kafka-producers-config
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-producers-service
+  namespace: todo-app
+  labels:
+    app: kafka-producers
+spec:
+  selector:
+    app: kafka-producers
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-producers-config
+  namespace: todo-app
+data:
+  KAFKA_CONFIG.json: |
+    {
+      "bootstrap.servers": "kafka-cluster:9092",
+      "security.protocol": "SASL_SSL",
+      "sasl.mechanisms": "SCRAM-SHA-256",
+      "acks": "all",
+      "retries": 3,
+      "batch.size": 16384,
+      "linger.ms": 5,
+      "buffer.memory": 33554432,
+      "max.in.flight.requests.per.connection": 5
+    }
+  LOGGING_CONFIG.json: |
+    {
+      "version": 1,
+      "disable_existing_loggers": false,
+      "formatters": {
+        "standard": {
+          "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+        }
+      },
+      "handlers": {
+        "default": {
+          "level": "INFO",
+          "formatter": "standard",
+          "class": "logging.StreamHandler"
+        }
+      },
+      "loggers": {
+        "": {
+          "handlers": ["default"],
+          "level": "INFO",
+          "propagate": false
+        }
+      }
+    }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: kafka-producers-hpa
+  namespace: todo-app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: kafka-producers
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

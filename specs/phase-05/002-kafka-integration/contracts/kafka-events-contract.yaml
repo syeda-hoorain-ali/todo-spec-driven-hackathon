@@ -1,0 +1,296 @@
+openapi: 3.0.0
+info:
+  title: Kafka Events Contract for Todo Chatbot
+  version: 1.0.0
+  description: API contract defining Kafka event structures for the Todo Chatbot application
+
+components:
+  schemas:
+    BaseEvent:
+      type: object
+      required:
+        - eventId
+        - timestamp
+        - eventType
+        - source
+        - userId
+        - payload
+      properties:
+        eventId:
+          type: string
+          description: Unique identifier for the event
+          example: "evt-123456789"
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp of event occurrence
+          example: "2026-01-22T10:00:00.000Z"
+        eventType:
+          type: string
+          description: Type of event being published
+          enum:
+            - task.created
+            - task.updated
+            - task.deleted
+            - task.completed
+            - task.reminder
+        source:
+          type: string
+          description: Component that generated the event
+          example: "task-service"
+        userId:
+          type: string
+          description: ID of the user who initiated the event
+          example: "user-12345"
+        payload:
+          type: object
+          description: Data associated with the event
+        headers:
+          type: object
+          description: Additional metadata for routing and processing
+          additionalProperties:
+            type: string
+
+    TaskCreatedEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          properties:
+            eventType:
+              type: string
+              enum: [task.created]
+            payload:
+              type: object
+              required:
+                - taskId
+                - title
+                - status
+                - createdAt
+                - updatedAt
+              properties:
+                taskId:
+                  type: string
+                  example: "task-67890"
+                title:
+                  type: string
+                  example: "Complete project documentation"
+                description:
+                  type: string
+                  example: "Finish writing the project documentation"
+                status:
+                  type: string
+                  enum: [pending, completed, archived]
+                  example: "pending"
+                priority:
+                  type: string
+                  enum: [low, medium, high]
+                  example: "medium"
+                dueDate:
+                  type: string
+                  format: date-time
+                  example: "2026-01-25T10:00:00.000Z"
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  example: ["documentation", "urgent"]
+                createdAt:
+                  type: string
+                  format: date-time
+                  example: "2026-01-22T10:00:00.000Z"
+                updatedAt:
+                  type: string
+                  format: date-time
+                  example: "2026-01-22T10:00:00.000Z"
+
+    TaskUpdatedEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          properties:
+            eventType:
+              type: string
+              enum: [task.updated]
+            payload:
+              type: object
+              required:
+                - taskId
+                - previousState
+                - newState
+                - updatedAt
+              properties:
+                taskId:
+                  type: string
+                  example: "task-67890"
+                previousState:
+                  $ref: '#/components/schemas/TaskPayload'
+                newState:
+                  $ref: '#/components/schemas/TaskPayload'
+                updatedAt:
+                  type: string
+                  format: date-time
+                  example: "2026-01-22T11:00:00.000Z"
+
+    TaskPayload:
+      type: object
+      properties:
+        taskId:
+          type: string
+          example: "task-67890"
+        title:
+          type: string
+          example: "Updated task title"
+        description:
+          type: string
+          example: "Updated task description"
+        status:
+          type: string
+          enum: [pending, completed, archived]
+          example: "completed"
+        priority:
+          type: string
+          enum: [low, medium, high]
+          example: "high"
+        dueDate:
+          type: string
+          format: date-time
+          example: "2026-01-25T10:00:00.000Z"
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["updated", "priority"]
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-01-22T10:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-01-22T11:00:00.000Z"
+
+    TaskReminderEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          properties:
+            eventType:
+              type: string
+              enum: [task.reminder]
+            payload:
+              type: object
+              required:
+                - taskId
+                - userId
+                - dueDate
+                - reminderTime
+                - reminderType
+              properties:
+                taskId:
+                  type: string
+                  example: "task-67890"
+                userId:
+                  type: string
+                  example: "user-12345"
+                dueDate:
+                  type: string
+                  format: date-time
+                  example: "2026-01-25T10:00:00.000Z"
+                reminderTime:
+                  type: string
+                  format: date-time
+                  example: "2026-01-25T09:00:00.000Z"
+                reminderType:
+                  type: string
+                  enum: [email, push, in-app]
+                  example: "email"
+
+    AuditLogEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          properties:
+            eventType:
+              type: string
+              example: "task.created"
+            payload:
+              type: object
+              required:
+                - action
+                - userId
+                - timestamp
+                - resourceType
+                - resourceId
+              properties:
+                action:
+                  type: string
+                  example: "create"
+                userId:
+                  type: string
+                  example: "user-12345"
+                timestamp:
+                  type: string
+                  format: date-time
+                  example: "2026-01-22T10:00:00.000Z"
+                resourceType:
+                  type: string
+                  example: "task"
+                resourceId:
+                  type: string
+                  example: "task-67890"
+                beforeState:
+                  type: object
+                  description: Previous state of the resource (optional)
+                afterState:
+                  type: object
+                  description: New state of the resource (optional)
+
+channels:
+  todo.task.events:
+    publish:
+      summary: Publish task-related events
+      operationId: publishTaskEvent
+      message:
+        oneOf:
+          - $ref: '#/components/schemas/TaskCreatedEvent'
+          - $ref: '#/components/schemas/TaskUpdatedEvent'
+          - $ref: '#/components/schemas/TaskDeletedEvent'
+          - $ref: '#/components/schemas/TaskCompletedEvent'
+
+  todo.reminders:
+    publish:
+      summary: Publish task reminder events
+      operationId: publishReminderEvent
+      message:
+        $ref: '#/components/schemas/TaskReminderEvent'
+
+  todo.audit.log:
+    publish:
+      summary: Publish audit log events
+      operationId: publishAuditEvent
+      message:
+        $ref: '#/components/schemas/AuditLogEvent'
+
+  todo.notifications:
+    subscribe:
+      summary: Subscribe to notification events
+      operationId: subscribeNotificationEvent
+      message:
+        $ref: '#/components/schemas/TaskReminderEvent'
+
+servers:
+  development:
+    url: localhost:9092
+    protocol: kafka
+    description: Local Kafka development server
+  production:
+    url: your-redpanda-cluster.redpanda.cloud:9092
+    protocol: kafka
+    description: Production Redpanda Cloud cluster
+    security:
+      - saslScram: []
+
+securitySchemes:
+  saslScram:
+    type: scram
+    description: SASL SCRAM authentication

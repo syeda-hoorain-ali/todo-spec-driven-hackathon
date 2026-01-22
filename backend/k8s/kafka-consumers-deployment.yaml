@@ -1,0 +1,197 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-consumers
+  namespace: todo-app
+  labels:
+    app: kafka-consumers
+    component: event-processing
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kafka-consumers
+  template:
+    metadata:
+      labels:
+        app: kafka-consumers
+        component: event-processing
+    spec:
+      containers:
+      - name: task-consumer
+        image: todo-chatbot-backend:kafka-integration
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka-cluster:9092"
+        - name: KAFKA_CLIENT_ID
+          value: "todo-chatbot-task-consumer"
+        - name: KAFKA_GROUP_ID
+          value: "task-service-group"
+        - name: APP_ENV
+          value: "production"
+        - name: LOG_LEVEL
+          value: "INFO"
+        command: ["python", "-m", "src.kafka.consumers.task_consumer"]
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+      - name: notification-consumer
+        image: todo-chatbot-backend:kafka-integration
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka-cluster:9092"
+        - name: KAFKA_CLIENT_ID
+          value: "todo-chatbot-notification-consumer"
+        - name: KAFKA_GROUP_ID
+          value: "notification-service-group"
+        - name: APP_ENV
+          value: "production"
+        - name: LOG_LEVEL
+          value: "INFO"
+        command: ["python", "-m", "src.kafka.consumers.notification_consumer"]
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+      - name: audit-consumer
+        image: todo-chatbot-backend:kafka-integration
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka-cluster:9092"
+        - name: KAFKA_CLIENT_ID
+          value: "todo-chatbot-audit-consumer"
+        - name: KAFKA_GROUP_ID
+          value: "audit-service-group"
+        - name: APP_ENV
+          value: "production"
+        - name: LOG_LEVEL
+          value: "INFO"
+        command: ["python", "-m", "src.kafka.consumers.audit_consumer"]
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: kafka-consumers-config
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-consumers-service
+  namespace: todo-app
+  labels:
+    app: kafka-consumers
+spec:
+  selector:
+    app: kafka-consumers
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-consumers-config
+  namespace: todo-app
+data:
+  KAFKA_CONFIG.json: |
+    {
+      "bootstrap.servers": "kafka-cluster:9092",
+      "security.protocol": "SASL_SSL",
+      "sasl.mechanisms": "SCRAM-SHA-256",
+      "session.timeout.ms": 30000,
+      "heartbeat.interval.ms": 10000,
+      "auto.offset.reset": "latest",
+      "enable.auto.commit": true,
+      "partition.assignment.strategy": "range"
+    }
+  LOGGING_CONFIG.json: |
+    {
+      "version": 1,
+      "disable_existing_loggers": false,
+      "formatters": {
+        "standard": {
+          "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+        }
+      },
+      "handlers": {
+        "default": {
+          "level": "INFO",
+          "formatter": "standard",
+          "class": "logging.StreamHandler"
+        }
+      },
+      "loggers": {
+        "": {
+          "handlers": ["default"],
+          "level": "INFO",
+          "propagate": false
+        }
+      }
+    }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: kafka-consumers-hpa
+  namespace: todo-app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: kafka-consumers
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
