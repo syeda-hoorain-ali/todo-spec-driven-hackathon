@@ -5,15 +5,15 @@ stage: misc
 date_iso: 2026-01-22
 surface: agent
 model: qwen3-code-plus
-feature: kafka-integration
+feature: phase-05/002-kafka-integration
 branch: phase-05/002-kafka-integration
 user: claude
 command: manual correction of spec-plan-task inconsistencies
 labels: ["kafka", "analysis", "remediation", "python-standards"]
 links:
-  spec: "../../../specs/phase-05/002-kafka-integration/spec.md"
-  plan: "../../../specs/phase-05/002-kafka-integration/plan.md"
-  tasks: "../../../specs/phase-05/002-kafka-integration/tasks.md"
+  spec: "specs/phase-05/002-kafka-integration/spec.md"
+  plan: "specs/phase-05/002-kafka-integration/plan.md"
+  tasks: "specs/phase-05/002-kafka-integration/tasks.md"
   ticket: null
   adr: null
   pr: null
@@ -35,7 +35,7 @@ Analysis and remediation of inconsistencies between spec, plan, and tasks for Ka
 ## Details
 - **Stage**: misc
 - **Date**: 2026-01-22
-- **Feature**: kafka-integration
+- **Feature**: phase-05/002-kafka-integration
 - **Branch**: phase-05/002-kafka-integration
 
 ## Files Created/Modified

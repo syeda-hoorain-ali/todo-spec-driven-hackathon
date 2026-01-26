@@ -5,13 +5,13 @@ stage: clarify
 date_iso: 2026-01-22
 surface: agent
 model: qwen3-code-plus
-feature: kafka-integration
+feature: phase-05/002-kafka-integration
 branch: phase-05/002-kafka-integration
 user: claude
 command: /sp.clarify ""
 labels: ["kafka", "clarification", "authentication", "serialization", "notifications"]
 links:
-  spec: "../../../specs/phase-05/002-kafka-integration/spec.md"
+  spec: "specs/phase-05/002-kafka-integration/spec.md"
   ticket: null
   adr: null
   pr: null

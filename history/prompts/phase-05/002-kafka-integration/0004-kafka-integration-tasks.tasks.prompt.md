@@ -5,15 +5,15 @@ stage: tasks
 date_iso: 2026-01-22
 surface: agent
 model: qwen3-code-plus
-feature: kafka-integration
+feature: phase-05/002-kafka-integration
 branch: phase-05/002-kafka-integration
 user: claude
 command: /sp.tasks ""
 labels: ["kafka", "tasks", "fastapi", "nextjs", "python"]
 links:
-  spec: "../../../specs/phase-05/002-kafka-integration/spec.md"
-  plan: "../../../specs/phase-05/002-kafka-integration/plan.md"
-  tasks: "../../../specs/phase-05/002-kafka-integration/tasks.md"
+  spec: "specs/phase-05/002-kafka-integration/spec.md"
+  plan: "specs/phase-05/002-kafka-integration/plan.md"
+  tasks: "specs/phase-05/002-kafka-integration/tasks.md"
   ticket: null
   adr: null
   pr: null
@@ -34,7 +34,7 @@ Generated comprehensive task list for Kafka integration in Todo Chatbot applicat
 ## Details
 - **Stage**: tasks
 - **Date**: 2026-01-22
-- **Feature**: kafka-integration
+- **Feature**: phase-05/002-kafka-integration
 - **Branch**: phase-05/002-kafka-integration
 
 ## Files Created/Modified
