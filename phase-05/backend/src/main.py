@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from src.api.routes.tasks import router as tasks_router
 from src.api.routes.chat import router as chat_router
+from src.api.routes.kafka_router import router as kafka_router
 from src.todo_agents.chat_agent import create_todo_chat_agent
 from src.utils.logging import logger
 from src.utils.exceptions import (
@@ -73,6 +74,9 @@ app.include_router(tasks_router)
 
 # Include chat routes (includes ChatKit functionality)
 app.include_router(chat_router)
+
+# Include Kafka routes
+app.include_router(kafka_router)
 
 # Add exception handlers
 app.add_exception_handler(TaskNotFoundException, task_not_found_handler)

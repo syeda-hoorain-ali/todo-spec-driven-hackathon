@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize the MCP server
 mcp = FastMCP(
-    name="todo-mcp-server",
+    name="taskflow-mcp-server",
     json_response=True,
     stateless_http=True,
     streamable_http_path="/",
