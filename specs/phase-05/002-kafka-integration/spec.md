@@ -112,7 +112,7 @@ As a developer, I should be able to extend the system with new event-driven feat
 
 ### Functional Requirements
 
-- **FR-KAFKA-001**: System MUST publish events to appropriate Kafka topics when todo-related operations occur (task.created, task.updated, task.deleted, task.completed, task.reminder)
+- **FR-KAFKA-001**: System MUST publish events to appropriate Kafka topics when task related operations occur (task.created, task.updated, task.deleted, task.completed, task.reminder)
 - **FR-KAFKA-002**: System MUST consume events from Kafka topics using appropriate consumer groups with multiple consumers per group and partition alignment for optimal scalability and fault tolerance, with reliable processing and acknowledgment mechanisms
 - **FR-KAFKA-003**: System MUST create and manage Kafka topics for different event types with appropriate partitioning for scalability
 - **FR-KAFKA-004**: Notification service MUST subscribe to task.reminder and task.created events and deliver notifications via email, push notifications, and in-app channels

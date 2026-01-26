@@ -7,7 +7,7 @@
 
 ## Summary
 
-Implementation of Apache Kafka as an event-driven messaging system for the Todo Chatbot application. This will enable real-time communication, event sourcing, and scalable asynchronous processing of todo-related operations including task creation, updates, notifications, and audit trails. The system will use JSON serialization, SASL/SCRAM authentication, and multiple consumers per group with partition alignment for optimal scalability.
+Implementation of Apache Kafka as an event-driven messaging system for the Todo Chatbot application. This will enable real-time communication, event sourcing, and scalable asynchronous processing of task related operations including task creation, updates, notifications, and audit trails. The system will use JSON serialization, SASL/SCRAM authentication, and multiple consumers per group with partition alignment for optimal scalability.
 
 ## Technical Context
 

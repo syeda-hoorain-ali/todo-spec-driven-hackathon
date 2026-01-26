@@ -3,7 +3,16 @@ from typing import List, Optional
 from datetime import datetime, timezone
 from ..models.task import Task, TaskCreate, TaskUpdate
 from ..utils.exceptions import InvalidRecurrencePatternException, InvalidReminderTimeException, ValidationError
-
+from ..kafka.producer import get_kafka_producer
+from ..kafka.topics import TASK_CREATED_TOPIC, TASK_UPDATED_TOPIC, TASK_DELETED_TOPIC
+from ..kafka.event_schemas import (
+    TaskCreatedEventSchema, 
+    TaskUpdatedEventSchema, 
+    TaskDeletedEventSchema, 
+    TaskEventPayload,
+    TaskUpdatedEventPayload,
+    TaskDeletedEventPayload,
+)
 
 class TaskService:
     """Service class to handle task-related business logic."""
@@ -37,6 +46,44 @@ class TaskService:
         session.add(task)
         session.commit()
         session.refresh(task)  # Refresh to get the generated ID and timestamps
+
+        # Publish task.created event to Kafka
+        try:
+            producer = get_kafka_producer()
+
+            # Create event payload
+            event_payload = TaskEventPayload(
+                taskId=str(task.id),
+                title=task.title,
+                description=task.description,
+                status="pending" if not task.completed else "completed",
+                priority=getattr(task, 'priority', 'medium'),
+                dueDate=task.due_date.isoformat() if task.due_date else None,
+                tags=[],
+                userId=user_id,
+                createdAt=task.created_at.isoformat(),
+                updatedAt=task.updated_at.isoformat()
+            )
+
+            # Create the event
+            event = TaskCreatedEventSchema(
+                userId=user_id,
+                payload=event_payload
+            )
+
+            # Send to Kafka
+            producer.produce(
+                topic=TASK_CREATED_TOPIC,
+                message=event.dict(),
+                key=str(task.id)
+            )
+            producer.flush(timeout=5)  # Wait up to 5 seconds for delivery
+
+        except Exception as e:
+            # Log the error but don't fail the task creation if Kafka is down
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to publish task.created event to Kafka: {str(e)}")
 
         return task
 
@@ -245,7 +292,7 @@ class TaskService:
 
         # Execute the statement, but handle the error for missing columns
         try:
-            tasks = session.exec(statement).all()
+            tasks = list(session.exec(statement).all())
             return list(tasks)
         except Exception:
             # If there's a column error, we'll handle it by creating a raw SQL query
@@ -289,6 +336,25 @@ class TaskService:
         if not task or task.user_id != user_id:
             return None
 
+        # Store the previous state for the event
+        previous_state = {
+            "id": task.id,
+            "title": task.title,
+            "description": task.description,
+            "completed": task.completed,
+            "user_id": task.user_id,
+            "due_date": task.due_date.isoformat() if task.due_date else None,
+            "reminder_time": task.reminder_time.isoformat() if task.reminder_time else None,
+            "is_recurring": task.is_recurring,
+            "recurrence_pattern": task.recurrence_pattern,
+            "recurrence_interval": task.recurrence_interval,
+            "next_occurrence": task.next_occurrence.isoformat() if task.next_occurrence else None,
+            "recurrence_end_date": task.recurrence_end_date.isoformat() if task.recurrence_end_date else None,
+            "max_occurrences": task.max_occurrences,
+            "created_at": task.created_at.isoformat(),
+            "updated_at": task.updated_at.isoformat()
+        }
+
         # Validate due date and reminder time if provided
         due_date = getattr(task_data, 'due_date', None)
         reminder_time = getattr(task_data, 'reminder_time', None)
@@ -314,6 +380,58 @@ class TaskService:
         session.commit()
         session.refresh(task)
 
+        # Publish task.updated event to Kafka
+        try:
+            producer = get_kafka_producer()
+
+            # Get the new state after update
+            new_state = {
+                "id": task.id,
+                "title": task.title,
+                "description": task.description,
+                "completed": task.completed,
+                "user_id": task.user_id,
+                "due_date": task.due_date.isoformat() if task.due_date else None,
+                "reminder_time": task.reminder_time.isoformat() if task.reminder_time else None,
+                "is_recurring": task.is_recurring,
+                "recurrence_pattern": task.recurrence_pattern,
+                "recurrence_interval": task.recurrence_interval,
+                "next_occurrence": task.next_occurrence.isoformat() if task.next_occurrence else None,
+                "recurrence_end_date": task.recurrence_end_date.isoformat() if task.recurrence_end_date else None,
+                "max_occurrences": task.max_occurrences,
+                "created_at": task.created_at.isoformat(),
+                "updated_at": task.updated_at.isoformat()
+            }
+
+            # Create event payload
+            event_payload = TaskUpdatedEventPayload(
+                taskId=str(task.id),
+                previousState=previous_state,
+                newState=new_state,
+                userId=user_id,
+                updatedAt=task.updated_at.isoformat()
+            )
+
+            # Create the event
+            event = TaskUpdatedEventSchema(
+                userId=user_id,
+                payload=event_payload
+            )
+
+            # Send to Kafka
+            producer.produce(
+                topic=TASK_UPDATED_TOPIC,
+                message=event.dict(),
+                key=str(task.id)
+            )
+            producer.flush(timeout=5)  # Wait up to 5 seconds for delivery
+
+        except Exception as e:
+            # Log the error but don't fail the task update if Kafka is down
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to publish task.updated event to Kafka: {str(e)}")
+
         return task
 
     @staticmethod
@@ -326,9 +444,59 @@ class TaskService:
         if not task or task.user_id != user_id:
             return False
 
+        # Store task details for the event before deletion
+        task_details = {
+            "id": task.id,
+            "title": task.title,
+            "description": task.description,
+            "completed": task.completed,
+            "user_id": task.user_id,
+            "due_date": task.due_date.isoformat() if task.due_date else None,
+            "reminder_time": task.reminder_time.isoformat() if task.reminder_time else None,
+            "is_recurring": task.is_recurring,
+            "recurrence_pattern": task.recurrence_pattern,
+            "recurrence_interval": task.recurrence_interval,
+            "next_occurrence": task.next_occurrence.isoformat() if task.next_occurrence else None,
+            "recurrence_end_date": task.recurrence_end_date.isoformat() if task.recurrence_end_date else None,
+            "max_occurrences": task.max_occurrences,
+            "created_at": task.created_at.isoformat(),
+            "updated_at": task.updated_at.isoformat()
+        }
+
         # Delete the task
         session.delete(task)
         session.commit()
+
+        # Publish task.deleted event to Kafka
+        try:
+            producer = get_kafka_producer()
+
+            # Create event payload
+            event_payload = TaskDeletedEventPayload(
+                taskId=str(task_id),
+                userId=user_id,
+                deletedAt=datetime.now(timezone.utc).isoformat()
+            )
+
+            # Create the event
+            event = TaskDeletedEventSchema(
+                userId=user_id,
+                payload=event_payload
+            )
+
+            # Send to Kafka
+            producer.produce(
+                topic=TASK_DELETED_TOPIC,
+                message=event.dict(),
+                key=str(task_id)
+            )
+            producer.flush(timeout=5)  # Wait up to 5 seconds for delivery
+
+        except Exception as e:
+            # Log the error but don't fail the task deletion if Kafka is down
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to publish task.deleted event to Kafka: {str(e)}")
 
         return True
 

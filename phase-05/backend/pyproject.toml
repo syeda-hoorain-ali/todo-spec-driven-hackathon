@@ -1,17 +1,23 @@
 [project]
 name = "backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "Todo Chatbot Backend with Kafka Integration"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "apscheduler>=3.11.2",
     "asyncpg>=0.31.0",
     "bleach>=6.3.0",
+    "confluent-kafka>=2.13.0",
     "cryptography>=46.0.3",
+    "dapr>=1.16.1",
+    "dapr-ext-fastapi>=1.16.1",
     "fastapi[standard]>=0.124.4",
+    "kafka-python>=2.3.0",
     "mcp>=1.0.0",
     "openai-agents>=0.6.4",
     "openai-chatkit>=1.4.1",
+    "prometheus-client>=0.24.1",
     "psycopg2-binary>=2.9.11",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
