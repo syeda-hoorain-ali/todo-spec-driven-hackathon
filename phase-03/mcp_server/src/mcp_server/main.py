@@ -10,6 +10,7 @@ from .database import get_session_with_user
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
 from .schemas import AddTaskResponse, ListTasksResponse, CompleteTaskResponse, DeleteTaskResponse, UpdateTaskResponse
 from .tools import create_task, list_tasks_filtered, complete_task_in_db, delete_task_from_db, update_task_in_db
+from .config import settings
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -21,7 +22,7 @@ mcp = FastMCP(
     json_response=True,
     stateless_http=True,
     streamable_http_path="/",
-    port=8080,
+    port=settings.port,
 )
 
 
