@@ -74,4 +74,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:${PORT}/health || exit 1
 
 # Run the MCP server
-CMD ["sh", "-c", "-m --with  mcp src.mcp_server.main"]
+CMD ["python", "-m", "src.mcp_server.main"]

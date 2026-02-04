@@ -21,7 +21,7 @@ mcp = FastMCP(
     name="Taskflow MCP Server",
     json_response=True,
     stateless_http=True,
-    streamable_http_path="/",
+    streamable_http_path="/mcp",
     port=settings.port,
 )
 
@@ -156,17 +156,7 @@ async def lifespan(app):
 # Export the ASGI app
 app = mcp.streamable_http_app()
 app.router.lifespan_context = lifespan
-# Explicitly allow Vercel hosts
-app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=[
-        "*",
-        "*.vercel.app",
-        "taskflow-phase-03-mcp-server.vercel.app",
-        "localhost",
-        "127.0.0.1"
-    ]
-)
+
 
 if __name__ == "__main__":
     import sys
