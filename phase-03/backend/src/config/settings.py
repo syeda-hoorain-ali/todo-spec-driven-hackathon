@@ -45,21 +45,16 @@ class Settings(BaseSettings):
         set_tracing_disabled(True)
         set_default_openai_api("chat_completions")
 
-
-        # if self.environment == "development" and self.qwen_api_key:
-        #     external_client = AsyncOpenAI(
-        #         api_key=self.qwen_api_key,
-        #         base_url=self.qwen_base_url,
-        #     )
-        # else:
-        #     external_client = AsyncOpenAI(
-        #         api_key=self.gemini_api_key,
-        #         base_url=self.gemini_base_url,
-        #     )
-        external_client = AsyncOpenAI(
-            api_key=self.qwen_api_key,
-            base_url=self.qwen_base_url,
-        )
+        if self.environment == "development" and self.qwen_api_key:
+            external_client = AsyncOpenAI(
+                api_key=self.qwen_api_key,
+                base_url=self.qwen_base_url,
+            )
+        else:
+            external_client = AsyncOpenAI(
+                api_key=self.gemini_api_key,
+                base_url=self.gemini_base_url,
+            )
 
         set_default_openai_client(external_client)
 
