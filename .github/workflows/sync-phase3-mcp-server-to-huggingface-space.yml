@@ -1,0 +1,46 @@
+name: Sync Phase 3 MCP server to Hugging Face hub
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      # Set up a temporary directory with only the phase 3 mcp server contents at root
+      - name: Prepare phase 3 mcp server for Hugging Face Spaces
+        run: |
+          mkdir -p hf-space-tmp
+          cp -r phase-03/mcp_server/* hf-space-tmp/
+          # Ensure the Dockerfile is at the root level for Hugging Face Spaces
+          if [ -f "hf-space-tmp/Dockerfile" ]; then
+            echo "Dockerfile found in phase-03/mcp_server, using as root Dockerfile"
+          else
+            echo "Error: Dockerfile not found in phase-03/mcp_server folder"
+            exit 1
+          fi
+
+      # Configure git for Hugging Face
+      - name: Configure git for Hugging Face
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # Push the phase 3 mcp_server contents to Hugging Face Spaces
+      - name: Push phase 3 mcp_server to Hugging Face Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          cd hf-space-tmp
+          git init
+          git checkout -b main
+          git remote add origin https://$GITHUB_REPOSITORY_OWNER:$HF_TOKEN@huggingface.co/spaces/syedahoorainali/taskflow-phase-03-mcp-server
+          git add .
+          git commit -m "Update phase 3 mcp server for Hugging Face Spaces [skip ci]"
+          git push -f origin main
