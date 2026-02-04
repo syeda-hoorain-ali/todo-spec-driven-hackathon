@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     debug: bool = False
     port: int = 8080
+    host: str = "0.0.0.0"
 
     model_config = SettingsConfigDict(
         env_file = ".env",

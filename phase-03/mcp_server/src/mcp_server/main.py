@@ -21,8 +21,9 @@ mcp = FastMCP(
     name="Taskflow MCP Server",
     json_response=True,
     stateless_http=True,
-    streamable_http_path="/mcp",
+    streamable_http_path="/",
     port=settings.port,
+    host= settings.host,
 )
 
 
