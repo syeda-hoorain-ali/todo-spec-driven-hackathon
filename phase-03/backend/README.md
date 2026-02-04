@@ -223,7 +223,7 @@ Tasks can be configured to repeat automatically with various patterns:
 
 The application requires the following environment variables:
 
-- `NEON_DATABASE_URL`: Database connection string
+- `DATABASE_URL`: Database connection string
 - `BETTER_AUTH_SECRET`: Secret key for JWT token verification
 - `JWT_ALGORITHM`: Algorithm used for JWT tokens (default: HS256)
 

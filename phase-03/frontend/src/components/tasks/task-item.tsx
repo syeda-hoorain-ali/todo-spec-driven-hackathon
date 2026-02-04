@@ -69,7 +69,7 @@ export function TaskItem({ task }: TaskItemProps) {
         <Checkbox
           checked={task.completed}
           onCheckedChange={handleToggleCompletion}
-          className="h-5 w-5 rounded-full border-2 data-[state=checked]:bg-accent data-[state=checked]:border-accent"
+          className="h-5 w-5 rounded-full border-2 cursor-pointer data-[state=checked]:bg-accent data-[state=checked]:border-accent"
         />
       </div>
 

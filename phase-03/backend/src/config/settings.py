@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from agents import set_default_openai_client, set_default_openai_api, set_tracing_disabled
 from openai import AsyncOpenAI
@@ -11,12 +12,11 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # Neon Database settings
-    neon_database_url: str
-    neon_api_key: str
+    # Database settings
+    database_url: str
 
     # MCP server settings
-    mcp_server_url: str = "http://localhost:8001"
+    mcp_server_url: str = "http://localhost:8080"
 
     # Better Auth settings
     better_auth_secret: str
@@ -34,18 +34,33 @@ class Settings(BaseSettings):
     frontend_base_url: str = "http://localhost:3000"
 
     # LLM settings
-    google_api_key: str
+    gemini_api_key: str
     gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
+
+    qwen_api_key: Optional[str] = None
+    qwen_base_url: str = "https://portal.qwen.ai/v1/"
 
     def configure_llm_provider(self):
         """Configure the global LLM provider for all agents"""
         set_tracing_disabled(True)
         set_default_openai_api("chat_completions")
 
+
+        # if self.environment == "development" and self.qwen_api_key:
+        #     external_client = AsyncOpenAI(
+        #         api_key=self.qwen_api_key,
+        #         base_url=self.qwen_base_url,
+        #     )
+        # else:
+        #     external_client = AsyncOpenAI(
+        #         api_key=self.gemini_api_key,
+        #         base_url=self.gemini_base_url,
+        #     )
         external_client = AsyncOpenAI(
-            api_key=self.google_api_key,
-            base_url=self.gemini_base_url,
+            api_key=self.qwen_api_key,
+            base_url=self.qwen_base_url,
         )
+
         set_default_openai_client(external_client)
 
 # Create a single instance of settings

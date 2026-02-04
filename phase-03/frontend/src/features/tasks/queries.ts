@@ -35,7 +35,6 @@ export const getTasks = async (userId: string, filters?: GetTasksFilters): Promi
   const url = queryString ? `/tasks?${queryString}` : '/tasks';
 
   const response = await userApi.get(url);
-  console.log("response", response.data)
   return response.data;
 };
 
