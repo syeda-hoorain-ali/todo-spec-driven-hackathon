@@ -1,10 +1,11 @@
 from sqlmodel import create_engine, Session
+from sqlalchemy.pool import QueuePool
 from contextlib import contextmanager
 from typing import Generator
-import os
 from dotenv import load_dotenv, find_dotenv
 from sqlalchemy import text
 from ..config.settings import settings
+
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -12,7 +13,23 @@ load_dotenv(find_dotenv())
 # Create the database engine
 # Only enable SQL echoing in development or if debug is True
 echo_sql = settings.environment.lower() != "production" or settings.debug
-engine = create_engine(settings.neon_database_url, echo=echo_sql)
+engine = create_engine(
+    settings.database_url, 
+    echo=echo_sql,
+    poolclass=QueuePool,  # Use connection pooling, NullPool for serverless (if on Vercel/Lambda):
+    pool_size=5,          # Number of connections to keep
+    max_overflow=10,      # Max additional connections
+    pool_pre_ping=True,   # Verify connection before using (IMPORTANT!)
+    pool_recycle=3600,    # Recycle connections after 1 hour
+    connect_args={
+        "sslmode": "require",
+        "connect_timeout": 10,
+        "keepalives": 1,
+        "keepalives_idle": 30,
+        "keepalives_interval": 10,
+        "keepalives_count": 5,
+    }
+)
 
 
 def get_session() -> Generator[Session, None, None]:

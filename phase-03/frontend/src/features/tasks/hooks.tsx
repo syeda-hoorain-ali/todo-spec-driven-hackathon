@@ -130,12 +130,9 @@ export const useTasks = (initialBackendFilters?: GetTasksFilters) => {
   // Apply local filtering and sorting to tasks
   const allTasks = fetchTasks.data?.tasks || [];
 
-  // Since the backend handles filtering via combinedFilters, we don't need additional local filtering
-  // The allTasks from the backend should already be filtered according to our parameters
-  const filteredTasks = allTasks;
-
+ 
   // Sort tasks based on filter options
-  const sortedTasks = [...filteredTasks].sort((a, b) => {
+  const sortedTasks = [...allTasks].sort((a, b) => {
     let aValue, bValue;
 
     switch (filterOptions.sortBy) {
@@ -179,6 +176,7 @@ export const useTasks = (initialBackendFilters?: GetTasksFilters) => {
       ...prev,
       ...newFilters
     }));
+    fetchTasks.refetch();
   };
 
   // Reset filters to default
@@ -191,6 +189,7 @@ export const useTasks = (initialBackendFilters?: GetTasksFilters) => {
       sortBy: "created_at",
       sortOrder: "desc"
     });
+    fetchTasks.refetch();
   };
 
   // Calculate stats based on the tasks returned from backend (which are already filtered)
@@ -204,7 +203,6 @@ export const useTasks = (initialBackendFilters?: GetTasksFilters) => {
 
   return {
     tasks: sortedTasks,
-    allTasks: allTasks,
     stats,
     isLoading: fetchTasks.isLoading || isUserLoading,
     error: fetchTasks.error,

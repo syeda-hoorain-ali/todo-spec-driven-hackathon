@@ -1,7 +1,7 @@
 import pytest
 import sys
 import os
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 from sqlmodel import select
 
 # Add the src directory to the path to allow imports
@@ -35,7 +35,7 @@ def test_create_task(session):
 
 def test_create_task_with_validation(session):
     """Test that due date validation works in create_task."""
-    future_date = datetime.now(UTC).replace(year=datetime.now(UTC).year + 1)
+    future_date = datetime.now(timezone.utc).replace(year=datetime.now(timezone.utc).year + 1)
 
     task_data = AddTaskRequest(
         title="Test Task",
@@ -52,7 +52,7 @@ def test_create_task_with_validation(session):
 
 def test_create_task_past_due_date(session):
     """Test that creating a task with past due date raises an exception."""
-    past_date = datetime.now(UTC).replace(year=datetime.now(UTC).year - 1)
+    past_date = datetime.now(timezone.utc).replace(year=datetime.now(timezone.utc).year - 1)
 
     task_data = AddTaskRequest(
         title="Test Task",
@@ -265,7 +265,7 @@ def test_recurrence_logic(session):
 def test_recurring_task_completion_creates_next_occurrence(session):
     """Test that completing a recurring task creates the next occurrence."""
     # Create a recurring task
-    future_date = datetime.now(UTC).replace(year=datetime.now(UTC).year + 1)
+    future_date = datetime.now(timezone.utc).replace(year=datetime.now(timezone.utc).year + 1)
     task_data = AddTaskRequest(
         title="Recurring Task",
         description="A task that repeats daily",

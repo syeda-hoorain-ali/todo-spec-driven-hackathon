@@ -14,6 +14,9 @@ from src.services.chatkit_store import ChatKitNeonStore
 from src.todo_agents.chat_agent import create_todo_chat_agent
 from src.todo_agents.context import UserContext
 
+# from agents import Runner
+# from fastapi.responses import JSONResponse
+
 
 agent, _ = create_todo_chat_agent()
 chatkit_store = ChatKitNeonStore()
@@ -54,4 +57,36 @@ async def chat(
     if isinstance(result, StreamingResult):
         return StreamingResponse(result, media_type="text/event-stream")
     return Response(content=result.json, media_type="application/json")
+
+
+# @router.post("/simple-chat", response_class=Response)
+# async def simple_chat(
+#     user_message: str,
+#     user_id: str
+# ):
+#     """Send a message to the AI chatbot and receive a response."""
+
+#     # Extract user ID from token
+#     if not user_id:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Invalid authentication token"
+#         )
+
+#     # Process the payload using the ChatKitServer instance
+#     # Pass the validated user_id in the context
+#     context = UserContext(
+#         user_id=user_id
+#     )
     
+#     result = await Runner.run(
+#         agent,
+#         user_message,
+#         context=context,
+#     )
+
+#     print(result.final_output)
+#     return JSONResponse(content={"response": result.final_output})
+    
+
+
