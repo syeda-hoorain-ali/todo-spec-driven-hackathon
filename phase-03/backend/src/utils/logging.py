@@ -9,8 +9,11 @@ except ImportError:
     from src.config.settings import settings
 
 # Create logs directory if it doesn't exist
-if not os.path.exists('logs'):
-    os.makedirs('logs')
+LOGS_DIR = "logs" if settings.environment == "development" else "/tmp/logs"
+
+# Create temporary logs directory if it doesn't exist
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)
 
 # Configure logging
 def setup_logging():
