@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 # Add the src directory to the Python path to allow imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from src.models.task import Task, TaskCreate
+from src.models.task import TaskCreate
 from src.services.task_service import TaskService
 
 
@@ -26,7 +26,7 @@ def session_fixture():
 
 def test_search_by_keyword(session: Session):
     """Test searching tasks by keyword in title or description."""
-    user_id = 1
+    user_id = "1"
 
     # Create tasks
     task1_data = TaskCreate(title="Grocery shopping", description="Buy milk and bread")
@@ -66,14 +66,14 @@ def test_search_by_keyword(session: Session):
 
 def test_filter_by_status(session: Session):
     """Test filtering tasks by completion status."""
-    user_id = 1
+    user_id = "1"
 
     # Create tasks
     task1_data = TaskCreate(title="Completed task", description="This is done")
     task2_data = TaskCreate(title="Pending task", description="This needs to be done")
 
     task1 = TaskService.create_task(user_id, task1_data, session)
-    task2 = TaskService.create_task(user_id, task2_data, session)
+    TaskService.create_task(user_id, task2_data, session)
 
     # Mark first task as completed
     TaskService.toggle_task_completion(task1.id, user_id, session)
@@ -107,7 +107,7 @@ def test_filter_by_status(session: Session):
 
 def test_filter_by_date_range(session: Session):
     """Test filtering tasks by date range."""
-    user_id = 1
+    user_id = "1"
 
     # Create tasks
     task1_data = TaskCreate(title="Old task", description="Created long ago")
@@ -134,7 +134,7 @@ def test_filter_by_date_range(session: Session):
 
 def test_combined_search_and_filter(session: Session):
     """Test combining search and filter criteria."""
-    user_id = 1
+    user_id = "1"
 
     # Create tasks
     task1_data = TaskCreate(title="Completed grocery", description="Buy food")

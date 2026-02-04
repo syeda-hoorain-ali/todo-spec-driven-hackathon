@@ -1,5 +1,6 @@
 "use client";
 
+import { useTasks } from '@/features/tasks/hooks';
 import { getSessionToken } from '@/lib/auth/client';
 import { env } from '@/utils/env';
 import { ChatKit, useChatKit, UseChatKitOptions } from '@openai/chatkit-react';
@@ -8,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 export function ChatInterface() {
 
+  const { refetch: refetchTasks } = useTasks();
   const [isExpanded, setIsExpanded] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -75,11 +77,14 @@ export function ChatInterface() {
     },
     onError: ({ error }) => {
       console.error(error);
-    }
+    },
 
+    onResponseEnd: async () => {
+      await refetchTasks()
+    }
   }), [isExpanded, isDark]); // Only recreate when these values change
 
-  const { control, setThreadId } = useChatKit(chatKitConfig);
+  const { control } = useChatKit(chatKitConfig);
 
   // Update header dynamically after initialization
   useEffect(() => {

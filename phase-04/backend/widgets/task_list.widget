@@ -1,0 +1,541 @@
+{
+  "version": "1.0",
+  "name": "Task list",
+  "template": "{\"type\":\"ListView\",\"status\":{\"text\":{{ (header) | tojson }},\"icon\":\"sparkle\"},\"children\":[{%- set _c -%}{%-for item in tasks -%},{\"type\":\"ListViewItem\",\"key\":{{ (item.id) | tojson }},\"gap\":3,\"onClickAction\":{\"type\":\"task.open\",\"payload\":{\"id\":{{ (item.id) | tojson }}}},\"children\":[{\"type\":\"Box\",\"background\":\"alpha-10\",\"radius\":\"sm\",\"padding\":2,\"children\":[{\"type\":\"Icon\",\"name\":{{ (item.icon) | tojson }},\"size\":\"lg\"}]},{\"type\":\"Col\",\"gap\":0,\"flex\":1,\"children\":[{%- set _c -%},{\"type\":\"Row\",\"children\":[{\"type\":\"Text\",\"value\":{{ (item.title) | tojson }},\"size\":\"sm\",\"weight\":\"semibold\",\"lineThrough\":{{ (item.isCompleted) | tojson }}},{\"type\":\"Spacer\"},{\"type\":\"Badge\",\"label\":{{ (item.priorityLabel) | tojson }},\"color\":{{ (item.priorityColor) | tojson }}}]}{%-if item.description -%},{\"type\":\"Text\",\"value\":{{ (item.description) | tojson }},\"size\":\"sm\",\"color\":\"secondary\",\"maxLines\":1}{%-else-%}{%-endif-%},{\"type\":\"Row\",\"gap\":3,\"children\":[{%- set _c -%},{\"type\":\"Caption\",\"value\":{{ (item.category) | tojson }}}{%-if item.due -%},{\"type\":\"Row\",\"gap\":1,\"children\":[{\"type\":\"Icon\",\"name\":\"calendar\",\"size\":\"sm\"},{\"type\":\"Caption\",\"value\":{{ (item.due.label) | tojson }},\"color\":{{ (item.due.color) | tojson }}}]}{%-else-%}{%-endif-%}{%-if item.reminder -%},{\"type\":\"Caption\",\"value\":{{ (item.reminder) | tojson }},\"color\":\"secondary\"}{%-else-%}{%-endif-%}{%- endset -%}{{- (_c[1:] if _c and _c[0] == ',' else _c) -}}]}{%- endset -%}{{- (_c[1:] if _c and _c[0] == ',' else _c) -}}]},{\"type\":\"Button\",\"size\":\"sm\",\"variant\":\"ghost\",\"uniform\":true,\"iconStart\":{{ (item.toggleIcon) | tojson }},\"onClickAction\":{\"type\":\"task.toggle\",\"payload\":{\"id\":{{ (item.id) | tojson }},\"completed\":{{ ((item.isCompleted)) | tojson }}}}}]}{%-endfor-%}{%- endset -%}{{- (_c[1:] if _c and _c[0] == ',' else _c) -}}]}",
+  "jsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "header": {
+        "type": "string"
+      },
+      "tasks": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "work",
+                "personal",
+                "health",
+                "finance",
+                "learning",
+                "other"
+              ]
+            },
+            "icon": {
+              "type": "string",
+              "enum": [
+                "analytics",
+                "atom",
+                "bolt",
+                "book-open",
+                "book-closed",
+                "calendar",
+                "chart",
+                "check",
+                "check-circle",
+                "check-circle-filled",
+                "chevron-left",
+                "chevron-right",
+                "circle-question",
+                "compass",
+                "cube",
+                "document",
+                "dots-horizontal",
+                "empty-circle",
+                "globe",
+                "keys",
+                "lab",
+                "images",
+                "info",
+                "lifesaver",
+                "lightbulb",
+                "mail",
+                "map-pin",
+                "maps",
+                "name",
+                "notebook",
+                "notebook-pencil",
+                "page-blank",
+                "phone",
+                "plus",
+                "profile",
+                "profile-card",
+                "star",
+                "star-filled",
+                "search",
+                "sparkle",
+                "sparkle-double",
+                "square-code",
+                "square-image",
+                "square-text",
+                "suitcase",
+                "settings-slider",
+                "user",
+                "write",
+                "write-alt",
+                "write-alt2",
+                "reload",
+                "play",
+                "mobile",
+                "desktop",
+                "external-link"
+              ]
+            },
+            "isCompleted": {
+              "type": "boolean"
+            },
+            "priorityLabel": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "priorityColor": {
+              "type": "string",
+              "enum": [
+                "success",
+                "warning",
+                "danger"
+              ]
+            },
+            "due": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string",
+                  "enum": [
+                    "secondary",
+                    "warning",
+                    "danger"
+                  ]
+                }
+              },
+              "required": [
+                "label",
+                "color"
+              ],
+              "additionalProperties": false
+            },
+            "reminder": {
+              "type": "string"
+            },
+            "toggleIcon": {
+              "type": "string",
+              "enum": [
+                "analytics",
+                "atom",
+                "bolt",
+                "book-open",
+                "book-closed",
+                "calendar",
+                "chart",
+                "check",
+                "check-circle",
+                "check-circle-filled",
+                "chevron-left",
+                "chevron-right",
+                "circle-question",
+                "compass",
+                "cube",
+                "document",
+                "dots-horizontal",
+                "empty-circle",
+                "globe",
+                "keys",
+                "lab",
+                "images",
+                "info",
+                "lifesaver",
+                "lightbulb",
+                "mail",
+                "map-pin",
+                "maps",
+                "name",
+                "notebook",
+                "notebook-pencil",
+                "page-blank",
+                "phone",
+                "plus",
+                "profile",
+                "profile-card",
+                "star",
+                "star-filled",
+                "search",
+                "sparkle",
+                "sparkle-double",
+                "square-code",
+                "square-image",
+                "square-text",
+                "suitcase",
+                "settings-slider",
+                "user",
+                "write",
+                "write-alt",
+                "write-alt2",
+                "reload",
+                "play",
+                "mobile",
+                "desktop",
+                "external-link"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "category",
+            "icon",
+            "isCompleted",
+            "priorityLabel",
+            "priorityColor",
+            "toggleIcon"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "header",
+      "tasks"
+    ],
+    "additionalProperties": false
+  },
+  "outputJsonPreview": {
+    "type": "ListView",
+    "status": {
+      "text": "3 tasks",
+      "icon": "sparkle"
+    },
+    "children": [
+      {
+        "type": "ListViewItem",
+        "key": "t1",
+        "gap": 3,
+        "onClickAction": {
+          "type": "task.open",
+          "payload": {
+            "id": "t1"
+          }
+        },
+        "children": [
+          {
+            "type": "Box",
+            "background": "alpha-10",
+            "radius": "sm",
+            "padding": 2,
+            "children": [
+              {
+                "type": "Icon",
+                "name": "suitcase",
+                "size": "lg"
+              }
+            ]
+          },
+          {
+            "type": "Col",
+            "gap": 0,
+            "flex": 1,
+            "children": [
+              {
+                "type": "Row",
+                "children": [
+                  {
+                    "type": "Text",
+                    "value": "Finish Q1 report",
+                    "size": "sm",
+                    "weight": "semibold",
+                    "lineThrough": false
+                  },
+                  {
+                    "type": "Spacer"
+                  },
+                  {
+                    "type": "Badge",
+                    "label": "high",
+                    "color": "danger"
+                  }
+                ]
+              },
+              {
+                "type": "Text",
+                "value": "Compile metrics and finalize slides",
+                "size": "sm",
+                "color": "secondary",
+                "maxLines": 1
+              },
+              {
+                "type": "Row",
+                "gap": 3,
+                "children": [
+                  {
+                    "type": "Caption",
+                    "value": "work"
+                  },
+                  {
+                    "type": "Row",
+                    "gap": 1,
+                    "children": [
+                      {
+                        "type": "Icon",
+                        "name": "calendar",
+                        "size": "sm"
+                      },
+                      {
+                        "type": "Caption",
+                        "value": "Feb 3",
+                        "color": "warning"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Caption",
+                    "value": "4:00 PM",
+                    "color": "secondary"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Button",
+            "size": "sm",
+            "variant": "ghost",
+            "uniform": true,
+            "iconStart": "empty-circle",
+            "onClickAction": {
+              "type": "task.toggle",
+              "payload": {
+                "id": "t1",
+                "completed": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "ListViewItem",
+        "key": "t2",
+        "gap": 3,
+        "onClickAction": {
+          "type": "task.open",
+          "payload": {
+            "id": "t2"
+          }
+        },
+        "children": [
+          {
+            "type": "Box",
+            "background": "alpha-10",
+            "radius": "sm",
+            "padding": 2,
+            "children": [
+              {
+                "type": "Icon",
+                "name": "chart",
+                "size": "lg"
+              }
+            ]
+          },
+          {
+            "type": "Col",
+            "gap": 0,
+            "flex": 1,
+            "children": [
+              {
+                "type": "Row",
+                "children": [
+                  {
+                    "type": "Text",
+                    "value": "Pay utility bill",
+                    "size": "sm",
+                    "weight": "semibold",
+                    "lineThrough": false
+                  },
+                  {
+                    "type": "Spacer"
+                  },
+                  {
+                    "type": "Badge",
+                    "label": "medium",
+                    "color": "warning"
+                  }
+                ]
+              },
+              {
+                "type": "Text",
+                "value": "Account ending • 4021",
+                "size": "sm",
+                "color": "secondary",
+                "maxLines": 1
+              },
+              {
+                "type": "Row",
+                "gap": 3,
+                "children": [
+                  {
+                    "type": "Caption",
+                    "value": "finance"
+                  },
+                  {
+                    "type": "Row",
+                    "gap": 1,
+                    "children": [
+                      {
+                        "type": "Icon",
+                        "name": "calendar",
+                        "size": "sm"
+                      },
+                      {
+                        "type": "Caption",
+                        "value": "Feb 1",
+                        "color": "danger"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Button",
+            "size": "sm",
+            "variant": "ghost",
+            "uniform": true,
+            "iconStart": "empty-circle",
+            "onClickAction": {
+              "type": "task.toggle",
+              "payload": {
+                "id": "t2",
+                "completed": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "ListViewItem",
+        "key": "t3",
+        "gap": 3,
+        "onClickAction": {
+          "type": "task.open",
+          "payload": {
+            "id": "t3"
+          }
+        },
+        "children": [
+          {
+            "type": "Box",
+            "background": "alpha-10",
+            "radius": "sm",
+            "padding": 2,
+            "children": [
+              {
+                "type": "Icon",
+                "name": "book-open",
+                "size": "lg"
+              }
+            ]
+          },
+          {
+            "type": "Col",
+            "gap": 0,
+            "flex": 1,
+            "children": [
+              {
+                "type": "Row",
+                "children": [
+                  {
+                    "type": "Text",
+                    "value": "Read 20 pages",
+                    "size": "sm",
+                    "weight": "semibold",
+                    "lineThrough": true
+                  },
+                  {
+                    "type": "Spacer"
+                  },
+                  {
+                    "type": "Badge",
+                    "label": "low",
+                    "color": "success"
+                  }
+                ]
+              },
+              {
+                "type": "Text",
+                "value": "Deep Work, ch. 2",
+                "size": "sm",
+                "color": "secondary",
+                "maxLines": 1
+              },
+              {
+                "type": "Row",
+                "gap": 3,
+                "children": [
+                  {
+                    "type": "Caption",
+                    "value": "learning"
+                  },
+                  {
+                    "type": "Row",
+                    "gap": 1,
+                    "children": [
+                      {
+                        "type": "Icon",
+                        "name": "calendar",
+                        "size": "sm"
+                      },
+                      {
+                        "type": "Caption",
+                        "value": "Feb 10",
+                        "color": "secondary"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Caption",
+                    "value": "6:00 PM",
+                    "color": "secondary"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Button",
+            "size": "sm",
+            "variant": "ghost",
+            "uniform": true,
+            "iconStart": "check-circle",
+            "onClickAction": {
+              "type": "task.toggle",
+              "payload": {
+                "id": "t3",
+                "completed": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "encodedWidget": "eyJpZCI6IjY1Nzg3OGEwLTBkZmUtNDFmNy1iNjc2LTQ0MmJlNjAxZWUyMSIsIm5hbWUiOiJUYXNrIGxpc3QiLCJ2aWV3IjoiPExpc3RWaWV3IHN0YXR1cz17eyB0ZXh0OiBoZWFkZXIsIGljb246IFwic3BhcmtsZVwiIH19PlxuICB7dGFza3MubWFwKChpdGVtKSA9PiAoXG4gICAgPExpc3RWaWV3SXRlbVxuICAgICAga2V5PXtpdGVtLmlkfVxuICAgICAgZ2FwPXszfVxuICAgICAgb25DbGlja0FjdGlvbj17eyB0eXBlOiBcInRhc2sub3BlblwiLCBwYXlsb2FkOiB7IGlkOiBpdGVtLmlkIH0gfX1cbiAgICA-XG4gICAgICA8Qm94IGJhY2tncm91bmQ9XCJhbHBoYS0xMFwiIHJhZGl1cz1cInNtXCIgcGFkZGluZz17Mn0-XG4gICAgICAgIDxJY29uIG5hbWU9e2l0ZW0uaWNvbn0gc2l6ZT1cImxnXCIgLz5cbiAgICAgIDwvQm94PlxuXG4gICAgICA8Q29sIGdhcD17MH0gZmxleD17MX0-XG4gICAgICAgIDxSb3c-XG4gICAgICAgICAgPFRleHRcbiAgICAgICAgICAgIHZhbHVlPXtpdGVtLnRpdGxlfVxuICAgICAgICAgICAgc2l6ZT1cInNtXCJcbiAgICAgICAgICAgIHdlaWdodD1cInNlbWlib2xkXCJcbiAgICAgICAgICAgIGxpbmVUaHJvdWdoPXtpdGVtLmlzQ29tcGxldGVkfVxuICAgICAgICAgIC8-XG4gICAgICAgICAgPFNwYWNlciAvPlxuICAgICAgICAgIDxCYWRnZSBsYWJlbD17aXRlbS5wcmlvcml0eUxhYmVsfSBjb2xvcj17aXRlbS5wcmlvcml0eUNvbG9yfSAvPlxuICAgICAgICA8L1Jvdz5cbiAgICAgICAge2l0ZW0uZGVzY3JpcHRpb24gJiYgKFxuICAgICAgICAgIDxUZXh0XG4gICAgICAgICAgICB2YWx1ZT17aXRlbS5kZXNjcmlwdGlvbn1cbiAgICAgICAgICAgIHNpemU9XCJzbVwiXG4gICAgICAgICAgICBjb2xvcj1cInNlY29uZGFyeVwiXG4gICAgICAgICAgICBtYXhMaW5lcz17MX1cbiAgICAgICAgICAvPlxuICAgICAgICApfVxuICAgICAgICA8Um93IGdhcD17M30-XG4gICAgICAgICAgPENhcHRpb24gdmFsdWU9e2l0ZW0uY2F0ZWdvcnl9IC8-XG4gICAgICAgICAge2l0ZW0uZHVlICYmIChcbiAgICAgICAgICAgIDxSb3cgZ2FwPXsxfT5cbiAgICAgICAgICAgICAgPEljb24gbmFtZT1cImNhbGVuZGFyXCIgc2l6ZT1cInNtXCIgLz5cbiAgICAgICAgICAgICAgPENhcHRpb24gdmFsdWU9e2l0ZW0uZHVlLmxhYmVsfSBjb2xvcj17aXRlbS5kdWUuY29sb3J9IC8-XG4gICAgICAgICAgICA8L1Jvdz5cbiAgICAgICAgICApfVxuICAgICAgICAgIHtpdGVtLnJlbWluZGVyICYmIDxDYXB0aW9uIHZhbHVlPXtpdGVtLnJlbWluZGVyfSBjb2xvcj1cInNlY29uZGFyeVwiIC8-fVxuICAgICAgICA8L1Jvdz5cbiAgICAgIDwvQ29sPlxuXG4gICAgICA8QnV0dG9uXG4gICAgICAgIHNpemU9XCJzbVwiXG4gICAgICAgIHZhcmlhbnQ9XCJnaG9zdFwiXG4gICAgICAgIHVuaWZvcm1cbiAgICAgICAgaWNvblN0YXJ0PXtpdGVtLnRvZ2dsZUljb259XG4gICAgICAgIG9uQ2xpY2tBY3Rpb249e3tcbiAgICAgICAgICB0eXBlOiBcInRhc2sudG9nZ2xlXCIsXG4gICAgICAgICAgcGF5bG9hZDogeyBpZDogaXRlbS5pZCwgY29tcGxldGVkOiAhaXRlbS5pc0NvbXBsZXRlZCB9LFxuICAgICAgICB9fVxuICAgICAgLz5cbiAgICA8L0xpc3RWaWV3SXRlbT5cbiAgKSl9XG48L0xpc3RWaWV3PiIsImRlZmF1bHRTdGF0ZSI6eyJoZWFkZXIiOiIzIHRhc2tzIiwidGFza3MiOlt7ImlkIjoidDEiLCJ0aXRsZSI6IkZpbmlzaCBRMSByZXBvcnQiLCJkZXNjcmlwdGlvbiI6IkNvbXBpbGUgbWV0cmljcyBhbmQgZmluYWxpemUgc2xpZGVzIiwiY2F0ZWdvcnkiOiJ3b3JrIiwiaWNvbiI6InN1aXRjYXNlIiwiaXNDb21wbGV0ZWQiOmZhbHNlLCJwcmlvcml0eUxhYmVsIjoiaGlnaCIsInByaW9yaXR5Q29sb3IiOiJkYW5nZXIiLCJkdWUiOnsibGFiZWwiOiJGZWIgMyIsImNvbG9yIjoid2FybmluZyJ9LCJyZW1pbmRlciI6IjQ6MDAgUE0iLCJ0b2dnbGVJY29uIjoiZW1wdHktY2lyY2xlIn0seyJpZCI6InQyIiwidGl0bGUiOiJQYXkgdXRpbGl0eSBiaWxsIiwiZGVzY3JpcHRpb24iOiJBY2NvdW50IGVuZGluZyDigKIgNDAyMSIsImNhdGVnb3J5IjoiZmluYW5jZSIsImljb24iOiJjaGFydCIsImlzQ29tcGxldGVkIjpmYWxzZSwicHJpb3JpdHlMYWJlbCI6Im1lZGl1bSIsInByaW9yaXR5Q29sb3IiOiJ3YXJuaW5nIiwiZHVlIjp7ImxhYmVsIjoiRmViIDEiLCJjb2xvciI6ImRhbmdlciJ9LCJ0b2dnbGVJY29uIjoiZW1wdHktY2lyY2xlIn0seyJpZCI6InQzIiwidGl0bGUiOiJSZWFkIDIwIHBhZ2VzIiwiZGVzY3JpcHRpb24iOiJEZWVwIFdvcmssIGNoLiAyIiwiY2F0ZWdvcnkiOiJsZWFybmluZyIsImljb24iOiJib29rLW9wZW4iLCJpc0NvbXBsZXRlZCI6dHJ1ZSwicHJpb3JpdHlMYWJlbCI6ImxvdyIsInByaW9yaXR5Q29sb3IiOiJzdWNjZXNzIiwiZHVlIjp7ImxhYmVsIjoiRmViIDEwIiwiY29sb3IiOiJzZWNvbmRhcnkifSwicmVtaW5kZXIiOiI2OjAwIFBNIiwidG9nZ2xlSWNvbiI6ImNoZWNrLWNpcmNsZSJ9XX0sInN0YXRlcyI6W10sInNjaGVtYSI6ImltcG9ydCB7IHogfSBmcm9tIFwiem9kXCJcblxuY29uc3QgSWNvbk5hbWUgPSB6LmVudW0oW1xuICBcImFuYWx5dGljc1wiLFxuICBcImF0b21cIixcbiAgXCJib2x0XCIsXG4gIFwiYm9vay1vcGVuXCIsXG4gIFwiYm9vay1jbG9zZWRcIixcbiAgXCJjYWxlbmRhclwiLFxuICBcImNoYXJ0XCIsXG4gIFwiY2hlY2tcIixcbiAgXCJjaGVjay1jaXJjbGVcIixcbiAgXCJjaGVjay1jaXJjbGUtZmlsbGVkXCIsXG4gIFwiY2hldnJvbi1sZWZ0XCIsXG4gIFwiY2hldnJvbi1yaWdodFwiLFxuICBcImNpcmNsZS1xdWVzdGlvblwiLFxuICBcImNvbXBhc3NcIixcbiAgXCJjdWJlXCIsXG4gIFwiZG9jdW1lbnRcIixcbiAgXCJkb3RzLWhvcml6b250YWxcIixcbiAgXCJlbXB0eS1jaXJjbGVcIixcbiAgXCJnbG9iZVwiLFxuICBcImtleXNcIixcbiAgXCJsYWJcIixcbiAgXCJpbWFnZXNcIixcbiAgXCJpbmZvXCIsXG4gIFwibGlmZXNhdmVyXCIsXG4gIFwibGlnaHRidWxiXCIsXG4gIFwibWFpbFwiLFxuICBcIm1hcC1waW5cIixcbiAgXCJtYXBzXCIsXG4gIFwibmFtZVwiLFxuICBcIm5vdGVib29rXCIsXG4gIFwibm90ZWJvb2stcGVuY2lsXCIsXG4gIFwicGFnZS1ibGFua1wiLFxuICBcInBob25lXCIsXG4gIFwicGx1c1wiLFxuICBcInByb2ZpbGVcIixcbiAgXCJwcm9maWxlLWNhcmRcIixcbiAgXCJzdGFyXCIsXG4gIFwic3Rhci1maWxsZWRcIixcbiAgXCJzZWFyY2hcIixcbiAgXCJzcGFya2xlXCIsXG4gIFwic3BhcmtsZS1kb3VibGVcIixcbiAgXCJzcXVhcmUtY29kZVwiLFxuICBcInNxdWFyZS1pbWFnZVwiLFxuICBcInNxdWFyZS10ZXh0XCIsXG4gIFwic3VpdGNhc2VcIixcbiAgXCJzZXR0aW5ncy1zbGlkZXJcIixcbiAgXCJ1c2VyXCIsXG4gIFwid3JpdGVcIixcbiAgXCJ3cml0ZS1hbHRcIixcbiAgXCJ3cml0ZS1hbHQyXCIsXG4gIFwicmVsb2FkXCIsXG4gIFwicGxheVwiLFxuICBcIm1vYmlsZVwiLFxuICBcImRlc2t0b3BcIixcbiAgXCJleHRlcm5hbC1saW5rXCIsXG5dKVxuXG5jb25zdCBEdWUgPSB6LnN0cmljdE9iamVjdCh7XG4gIGxhYmVsOiB6LnN0cmluZygpLFxuICBjb2xvcjogei5lbnVtKFtcInNlY29uZGFyeVwiLCBcIndhcm5pbmdcIiwgXCJkYW5nZXJcIl0pLFxufSlcblxuY29uc3QgVGFza0l0ZW0gPSB6LnN0cmljdE9iamVjdCh7XG4gIGlkOiB6LnN0cmluZygpLFxuICB0aXRsZTogei5zdHJpbmcoKSxcbiAgZGVzY3JpcHRpb246IHouc3RyaW5nKCkub3B0aW9uYWwoKSxcbiAgY2F0ZWdvcnk6IHouZW51bShbXG4gICAgXCJ3b3JrXCIsXG4gICAgXCJwZXJzb25hbFwiLFxuICAgIFwiaGVhbHRoXCIsXG4gICAgXCJmaW5hbmNlXCIsXG4gICAgXCJsZWFybmluZ1wiLFxuICAgIFwib3RoZXJcIixcbiAgXSksXG4gIGljb246IEljb25OYW1lLFxuICBpc0NvbXBsZXRlZDogei5ib29sZWFuKCksXG4gIHByaW9yaXR5TGFiZWw6IHouZW51bShbXCJsb3dcIiwgXCJtZWRpdW1cIiwgXCJoaWdoXCJdKSxcbiAgcHJpb3JpdHlDb2xvcjogei5lbnVtKFtcInN1Y2Nlc3NcIiwgXCJ3YXJuaW5nXCIsIFwiZGFuZ2VyXCJdKSxcbiAgZHVlOiBEdWUub3B0aW9uYWwoKSxcbiAgcmVtaW5kZXI6IHouc3RyaW5nKCkub3B0aW9uYWwoKSxcbiAgdG9nZ2xlSWNvbjogSWNvbk5hbWUsXG59KVxuXG5jb25zdCBXaWRnZXRTdGF0ZSA9IHouc3RyaWN0T2JqZWN0KHtcbiAgaGVhZGVyOiB6LnN0cmluZygpLFxuICB0YXNrczogei5hcnJheShUYXNrSXRlbSksXG59KVxuXG5leHBvcnQgZGVmYXVsdCBXaWRnZXRTdGF0ZSIsImpzb25TY2hlbWEiOnt9LCJzY2hlbWFNb2RlIjoiem9kIiwic2NoZW1hVmFsaWRpdHkiOiJ2YWxpZCIsInZpZXdWYWxpZGl0eSI6InZhbGlkIiwiZGVmYXVsdFN0YXRlVmFsaWRpdHkiOiJ2YWxpZCJ9"
+}

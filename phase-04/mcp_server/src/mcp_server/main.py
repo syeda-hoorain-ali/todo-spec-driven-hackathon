@@ -1,13 +1,16 @@
 from mcp.server.fastmcp import FastMCP
-from pydantic import BaseModel
-from typing import List, Dict, Any
 import logging
 from sqlmodel import select
+from contextlib import asynccontextmanager
+from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
-from .config import settings
 from .database import get_session_with_user
 from .models import Task, AddTaskRequest, ListTasksRequest, CompleteTaskRequest, DeleteTaskRequest, UpdateTaskRequest
+from .schemas import AddTaskResponse, ListTasksResponse, CompleteTaskResponse, DeleteTaskResponse, UpdateTaskResponse
 from .tools import create_task, list_tasks_filtered, complete_task_in_db, delete_task_from_db, update_task_in_db
+from .config import settings
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -15,51 +18,13 @@ logger = logging.getLogger(__name__)
 
 # Initialize the MCP server
 mcp = FastMCP(
-    name="todo-mcp-server",
+    name="Taskflow MCP Server",
     json_response=True,
     stateless_http=True,
     streamable_http_path="/",
     port=settings.port,
-    host="0.0.0.0",
+    host= settings.host,
 )
-
-
-# Add a health check endpoint
-@mcp.custom_route("/health", methods=["GET"])
-async def health_check(request):
-    from starlette.responses import JSONResponse
-    return JSONResponse({"status": "healthy", "service": "mcp-server"})
-
-
-mcp.custom_route
-
-# Define response models for the tools
-class AddTaskResponse(BaseModel):
-    task_id: int
-    status: str
-    title: str
-
-
-class ListTasksResponse(BaseModel):
-    tasks: List[Dict[str, Any]]  # For now keeping as dict for compatibility with MCP protocol
-
-
-class CompleteTaskResponse(BaseModel):
-    task_id: int
-    status: str
-    title: str
-
-
-class DeleteTaskResponse(BaseModel):
-    task_id: int
-    status: str
-    title: str
-
-
-class UpdateTaskResponse(BaseModel):
-    task_id: int
-    status: str
-    title: str
 
 
 # Define the add_task tool
@@ -176,6 +141,24 @@ async def update_task(request: UpdateTaskRequest) -> UpdateTaskResponse:
         raise
 
 
+@mcp.custom_route("/health", methods=["GET"]) 
+async def health_check(request: Request) -> JSONResponse: 
+    return JSONResponse({"status": "ok"})
+
+
+# Create the ASGI app for Vercel
+# CRITICAL: You need the lifespan context manager
+@asynccontextmanager
+async def lifespan(app):
+    async with mcp.session_manager.run():
+        yield
+
+
+# Export the ASGI app
+app = mcp.streamable_http_app()
+app.router.lifespan_context = lifespan
+
+
 if __name__ == "__main__":
     import sys
 
@@ -184,9 +167,10 @@ if __name__ == "__main__":
         # Run as MCP server via stdio
         mcp.run(transport="stdio")
     else:
-        # For development and containerized environments, run the server
+        # For development, just run the server in the foreground
         mcp.run(transport="streamable-http")
 
         print("Starting MCP server...")
         print("Use --stdio argument to run as MCP server via stdio")
         
+# uv run -m --with mcp src.mcp_server.main

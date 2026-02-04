@@ -9,8 +9,6 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from src.main import app
-from src.database.database import get_session
-from src.models.task import Task
 
 
 # Override the database session for testing
@@ -214,9 +212,9 @@ def test_get_tasks_with_search_filter_endpoint(client: TestClient, session: Sess
     task3_data = TaskCreate(title="Email response", description="Reply to client")
     task4_data = TaskCreate(title="Completed task", description="This task is completed", completed=True)
 
-    task1 = TaskService.create_task(user_id, task1_data, session)
-    task2 = TaskService.create_task(user_id, task2_data, session)
-    task3 = TaskService.create_task(user_id, task3_data, session)
+    TaskService.create_task(user_id, task1_data, session)
+    TaskService.create_task(user_id, task2_data, session)
+    TaskService.create_task(user_id, task3_data, session)
     task4 = TaskService.create_task(user_id, task4_data, session)
 
     # Test search with keyword
@@ -288,7 +286,6 @@ def test_api_user_isolation(client: TestClient, session: Session):
 
     # Create tasks for user 1
     user1_id = "1"
-    user2_id = "2"
 
     task_data = TaskCreate(title="User 1 Task", description="Task for user 1")
     user1_task = TaskService.create_task(user1_id, task_data, session)
