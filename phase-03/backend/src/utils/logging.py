@@ -31,7 +31,7 @@ def setup_logging():
     )
 
     # Create file handler - always log to file regardless of environment
-    file_handler = logging.FileHandler(f'logs/app_{datetime.now().strftime("%Y%m%d")}.log')
+    file_handler = logging.FileHandler(f'{LOGS_DIR}/app_{datetime.now().strftime("%Y%m%d")}.log')
     file_handler.setLevel(log_level)
     file_handler.setFormatter(formatter)
 
